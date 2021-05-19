@@ -1,0 +1,37 @@
+Vamos explicar un pouco os pasos que vou seguir para facer o procesado das ips e sacalas en googleMaps:
+
+Paso 1:
+	Ṕrocesar os as ips que nos saliría no dataframe de pandas. Non debería ser moi complicado porque podo coller a columna ou columnas que tocan e gardalas no seu propio dataframe a parte, ou simplemente coller a lista toda e percorrer a columnas necesarias.
+
+	Entendo que no dataframe van salir dúas columnas, unha orixe e outra destino. Debería percorrer ambas, e gardar só as ips que son distintas, así podería procesalas sen problema.
+
+Paso 2:
+	Paserlle as ips a páxina. Polo que vexo pode facerse unha petición get que che devolve un Json con bastante información, en teoría só necesito a latitude e a lonxitude, que os devolve en formato txt.
+
+Paso 3:
+	Facer un JsonToCoordIP donde convirta o Json ao obxecto CoordIP, Parece que vou ter que facer unha petición por IP e gardar os resultados nun array ou nun dataframe (mellor o dataframe que sería mais fácil de procesar).
+
+	É mais non tería porqué facer o objecto. Podería gardar os datos nun datafram directamente, cada vez que recibo o Json leo a latitude e a lonxitude do dato e métoos no dataframe das IPs. 
+
+	Exemplo: Eu creo o dataframe das IPs despois de procesas o do pcap, cando o creo métolle dúa columnas extras, que son a latitude e a lonxitude, e cando reciba o resultado do GET proceso o Json e gardo na táboa a latitude e a lonxitude coa ip correspondente, así podo ir procesandoo sen problemas
+
+Paso 4:
+	Polo que parece googleMaps funciona con Jsons, polo tanto necesito procesar os datos a Json para poder mandarllos 
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+Orden de probas
+
+Aínda que sei que puxen os pasos por oder, esa é a forma na que se teñen que executar no traballo. Para ir probando as cousas o que podo facer é unha implementación pequena nun arhcivo en python que faga unha chamada a https://ipgeolocationapi.com/ e recibir o JSon.
+
+Despois desto faremos a implementación en Javascript de GoogleMaps e intentarémolo probar no servidor de DJango de myciao.
+
+if __name__ == '__main__':
+    main()
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+Feito ata agora
+
+Teño xa un mapa no servidor de Django no que podo colocar marcadores para indicar donde vai cada cousa
+
+Teño que mirar o tema da BD, con pandas e con sqlite podemos ter unha base de datos creada no noso servidor, entendo que é onde poden estar os datos gardados de forma permanente para cada usuario. Así que para acceder as IPs igual non viña mal comprobar dende a base de datos. POR EXEMPLO: temos ao usuario USER1 que ten 3 pcaps almacenados, podemos acceder á base de datos e elixir que pcap podemos filtrar e a parti de ahí, dende a táboa CONSULTAS (sería a táboa que ten gardados todos os datos do archivo pcap) podemos facer un 	SELECT DINSTINCT SOURCE, DESTINATION FROM CONSULTAS; (IPA e IPB, sería ip orixe e ip destino)
