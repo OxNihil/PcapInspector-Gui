@@ -35,3 +35,9 @@ Feito ata agora
 Teño xa un mapa no servidor de Django no que podo colocar marcadores para indicar donde vai cada cousa
 
 Teño que mirar o tema da BD, con pandas e con sqlite podemos ter unha base de datos creada no noso servidor, entendo que é onde poden estar os datos gardados de forma permanente para cada usuario. Así que para acceder as IPs igual non viña mal comprobar dende a base de datos. POR EXEMPLO: temos ao usuario USER1 que ten 3 pcaps almacenados, podemos acceder á base de datos e elixir que pcap podemos filtrar e a parti de ahí, dende a táboa CONSULTAS (sería a táboa que ten gardados todos os datos do archivo pcap) podemos facer un 	SELECT DINSTINCT SOURCE, DESTINATION FROM CONSULTAS; (IPA e IPB, sería ip orixe e ip destino)
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+Feito ata agora
+
+Logrei crear unha vase de datos con ips a parti dun dataframe descargado, este ten tamén latitude mais a lonxitude de cada ip, polo tanto xa podo usala para probar o mapa

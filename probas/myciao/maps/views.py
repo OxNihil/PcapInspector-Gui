@@ -9,4 +9,4 @@ from django.http import HttpResponse
 #	return HttpResponse("Hola mundo")
 
 def index(request):
-	return render(request, '/home/marcos/Documents/myciao/maps/probaMaps.html')
+	return render(request, '/home/marcos/Documents/pi-AnalisisPaqueteria-Iago-Marcos-Daniel/probas/myciao/maps/probaMaps.html')
