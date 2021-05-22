@@ -1,5 +1,7 @@
-<!DOCTYPE html>
-<html>
+{% extends 'base.html' %}
+
+{% block content %}
+
   <head>
     <title>Simple Map</title>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
@@ -11,48 +13,65 @@
       }
 
       /* Optional: Makes the sample page fill the window. */
-      html,
-      body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-    </style>
-    <script>
-        let map;
+          html,
+          body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+          }
+        </style>
+        <script>
+            let map;
 
-        function initMap() {
-            const myLatLng = { lat: -25.363, lng: 131.044 };
-            const myLatlng2 = { lat: -26.363, lng: 132.044 };
-            map = new google.maps.Map(document.getElementById("map"), {
-                center: { lat: -25.363, lng: 131.044  },
-                zoom: 8,
-            });
+            function initMap() {
+                map = new google.maps.Map(document.getElementById("map"), {
+                    center: {lat: -1.95, lng: 30.06},
+                    zoom: 8,
+                });
+                var lats = Array();
+                var lon = Array();
+                var ip = Array();
 
-            new google.maps.Marker({
-                position: myLatLng,
-                map,
-                title: "Hello World!",
-            });
 
-            var marker = new google.maps.Marker({
-                position: myLatlng2,
-                title:"Hello World!2"
-            });
+                console.log('{{aux}}');
 
-            // To add the marker to the map, call setMap();
-            marker.setMap(map);
+                ip = {{ network|safe }};
 
-        }
-    </script>
-  </head>
-  <body>
-    <div id="map"></div>
+                console.log(ip);
+                console.log(ip.length)
+                lats = ({{lat|safe }});
+                lon = {{lon|safe }};
 
-    <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
-    <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCG9MOrb8kUbivw1tKrHSgM9NTqiXUmk_Y&callback=initMap&libraries=&v=weekly"
-      async
-    ></script>
-  </body>
-</html>
+                for (var j = 0; j < ip.length; j++) {
+                    var latUse = lats[j];
+                    var lngUse = lon[j];
+
+                    latUse = parseFloat(latUse);
+                    lngUse = parseFloat(lngUse);
+
+                    var myLatLng = {lat: latUse, lng: lngUse};
+
+                    new google.maps.Marker({
+                        position: myLatLng,
+                        map,
+                        title: ip[j],
+                    });
+
+                    // To add the marker to the map, call setMap();
+
+
+                }
+                marker.setMap(map);
+            }
+        </script>
+      </head>
+      <body>
+        <div id="map"></div>
+
+        <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
+        <script
+          src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCG9MOrb8kUbivw1tKrHSgM9NTqiXUmk_Y&callback=initMap&libraries=&v=weekly"
+          async
+        ></script>
+      </body>
+{% endblock %}
