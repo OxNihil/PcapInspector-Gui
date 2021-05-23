@@ -3,37 +3,52 @@ from django.shortcuts import render
 import sqlalchemy as sa
 import pandas.io.sql as sql
 import requests
+import datapackage
 
-#from maps.models import Product,Review
+
+
+
+def saveData():
+	data_url = 'https://datahub.io/core/geoip2-ipv4/datapackage.json'
+
+	# to load Data Package into storage
+	package = datapackage.Package(data_url)
+
+	resources = package.resources
+	for resource in resources:
+		if resource.tabular:
+			data = pd.read_csv(resource.descriptor['path'])
+
+	engine = sa.create_engine( "sqlite:////tmp/db.sqlite" )
+	db = pd.io.sql.SQLDatabase(engine)
+	tb = pd.io.sql.SQLTable(name="IPs", pandas_sql_engine=db, frame=data)
+	tb.create()
+	tb.insert()
 
 # Create your views here.
 
-def carga():
-    engine=sa.create_engine("sqlite:////tmp/db.sqlite")
-    meta = sa.MetaData()
-    tb = sa.Table( "IPs", meta, autoload_with=engine )
+def load():
+	engine = sa.create_engine("sqlite:////tmp/db.sqlite")
+	meta = sa.MetaData()
+	tb = sa.Table("IPs", meta, autoload_with=engine)
 
-    db = pd.io.sql.SQLDatabase( engine, meta=meta )
+	db = pd.io.sql.SQLDatabase(engine, meta=meta)
 
-    df = db.read_table("IPs")
+	df = db.read_table("IPs")
 
-    data = df.head(100)
+	data = df.head(100)
 
+	data = data['network']
 
-    data = data['network']
+	arrayDatos = data.to_numpy()
 
-    arrayDatos = data.to_numpy()
+	for x in range(10):
+		head, sep, tail = arrayDatos[x].partition('/')
+		arrayDatos[x] = head
 
+	dataF = pd.DataFrame(arrayDatos, columns=['network'])
 
-
-    for x in range(10):
-        head, sep, tail = arrayDatos[x].partition('/')
-        arrayDatos[x] = head
-
-
-    dataF = pd.DataFrame(arrayDatos, columns=['network'])
-
-    return dataF
+	return dataF
 
 def ipgeo(ip):
 
@@ -51,33 +66,28 @@ def ipgeo(ip):
 
 
 def index(request):
-	dataIp = carga()
+	try:
+		saveData()
+		pass
+	except Exception as e:
+		print(e)
+	dataIp = load()
 	dataGeo = pd.DataFrame()
 	network = []
 	lat = []
-	lon =[]
+	lon = []
 
 	a = 0
 	while (a < len(dataIp)):
 		dataGeo = dataGeo.append(ipgeo(dataIp['network'][a]), ignore_index=True)
 		a = a + 1
 
-
 	b = 0
 	while (b < len(dataIp)):
 		network.append(str(dataGeo['network'][b]))
-		b = b+1
-
-	c = 0
-	while (c < len(dataIp)):
-		lat.append(str(dataGeo['lat'][c]))
-		c = c + 1
-
-	d = 0
-	while (d < len(dataIp)):
-		lon.append(str(dataGeo['lon'][d]))
-		d = d + 1
-
+		lat.append(str(dataGeo['lat'][b]))
+		lon.append(str(dataGeo['lon'][b]))
+		b = b + 1
 
 
 	context = {'network': network, 'lat': lat, 'lon': lon}
