@@ -17,7 +17,7 @@ def carga():
 
     df = db.read_table("IPs")
 
-    data = df.head(10)
+    data = df.head(100)
 
 
     data = data['network']

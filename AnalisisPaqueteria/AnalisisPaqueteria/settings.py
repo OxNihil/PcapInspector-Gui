@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'maps',
     'pcapinspector',
-    'crispy-forms',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -124,6 +124,3 @@ STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-MEDIA_URL = '/tmp/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'tmp')
