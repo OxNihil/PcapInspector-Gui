@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+{% if all_packets %}
+ 	<h3>Previous capture:</h3>
+ 	<form method="POST" class="post-form">
+ 		{% csrf_token %}
+        	{{ form.as_p }}
+        	<button type="submit" class="save btn btn-default">Filtrar</button>
+	</form>
+  	<table>
+	  {% for packet in all_packets %}
+	  <tr id="{{ packet.frame_number}}">
+		<td>{{ packet.frame_number}}</td>
+		<td>{{ packet.frame_time}}</td>
+		<td>{{ packet.eth_src }}</td>
+		<td>{{ packet.eth_dst}}</td>
+		<td>{{ packet.ip_src }}</td>
+		<td>{{ packet.ip_dst}}</td>
+		<td>{{ packet.protocol}}</td>
+		<td>{{ packet.ip_len}}</td>
+	  </tr>
+	  {% endfor %}
+	</table>
+  {% endif %}
+ {% endblock %}
+
