@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+  {% if uploaded_file_url %}
+    <p>File uploaded at: <a href="{{ uploaded_file_url }}">{{ uploaded_file_url }}</a></p>
+  {% endif %}
+  
+  {% if all_packets %}
+  	  <table>
+	  {% for packet in all_packets %}
+	  <tr>
+		<td>{{ packet.frame_number}}</td>
+		<td>{{ packet.eth_src }}</td>
+		<td>{{ packet.eth_dst}}</td>
+		<td>{{ packet.ip_src }}</td>
+		<td>{{ packet.ip_dst}}</td>
+		<td>{{ packet.protocol}}</td>
+	  </tr>
+	  {% endfor %}
+	  </table>
+  {% endif %}
+  <p><a href="{% url 'index' %}">Return to home</a></p>
+  <p><a href="{% url 'upload' %}">Return to upload</a></p>
+{% endblock %}
