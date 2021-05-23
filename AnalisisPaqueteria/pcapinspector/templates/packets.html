@@ -10,17 +10,17 @@
   {% if all_packets %}
   	  <table>
 	  {% for packet in all_packets %}
-	  <tr>
+	  <tr id="{{ packet.frame_number}}">
 		<td>{{ packet.frame_number}}</td>
+		<td>{{ packet.frame_time}}</td>
 		<td>{{ packet.eth_src }}</td>
 		<td>{{ packet.eth_dst}}</td>
 		<td>{{ packet.ip_src }}</td>
 		<td>{{ packet.ip_dst}}</td>
 		<td>{{ packet.protocol}}</td>
+		<td>{{ packet.ip_len}}</td>
 	  </tr>
 	  {% endfor %}
 	  </table>
   {% endif %}
-  <p><a href="{% url 'index' %}">Return to home</a></p>
-  <p><a href="{% url 'upload' %}">Return to upload</a></p>
 {% endblock %}

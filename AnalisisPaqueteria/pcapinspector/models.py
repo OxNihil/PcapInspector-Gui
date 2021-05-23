@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 class pcap_result(models.Model):
     frame_number=models.CharField(max_length=10,primary_key=True)
@@ -15,6 +16,4 @@ class pcap_result(models.Model):
     ip_len=models.IntegerField()
     def __unicode__(self):
         return self.name
-        
-      
-
+       
