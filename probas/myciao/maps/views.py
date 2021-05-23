@@ -1,27 +1,65 @@
 import pandas as pd
-import array
 from django.shortcuts import render
-from django.http import HttpResponse
-from maps.dataCreation import lecturaDeDatos
-from maps.dataCreation import Coordinadas
+import sqlalchemy as sa
+import pandas.io.sql as sql
+import requests
 
 #from maps.models import Product,Review
 
 # Create your views here.
 
-#def index(request):
-#	return HttpResponse("Hola mundo")
+def carga():
+    engine=sa.create_engine("sqlite:////tmp/db.sqlite")
+    meta = sa.MetaData()
+    tb = sa.Table( "IPs", meta, autoload_with=engine )
+
+    db = pd.io.sql.SQLDatabase( engine, meta=meta )
+
+    df = db.read_table("IPs")
+
+    data = df.head(10)
+
+
+    data = data['network']
+
+    arrayDatos = data.to_numpy()
+
+
+
+    for x in range(10):
+        head, sep, tail = arrayDatos[x].partition('/')
+        arrayDatos[x] = head
+
+
+    dataF = pd.DataFrame(arrayDatos, columns=['network'])
+
+    return dataF
+
+def ipgeo(ip):
+
+    url1 = "https://sys.airtel.lv/ip2country/" + ip + "/?full=true" #por ahora iremos usando esta
+
+    #url1 = "http://api.ipstack.com/" + ip + "?access_key=fa3ea559085abe8f4a3eebbebd35695a"
+
+    r = requests.get(url1)
+    data = r.json()
+
+    dataframe = {'network': ip, 'lat': data['lat'], 'lon': data['lon']}
+
+
+    return dataframe
+
 
 def index(request):
-	dataIp = lecturaDeDatos.carga()
-	dataGeo = pd.DataFrame() #json que devolve a utilización da API para geolocalizar ips
+	dataIp = carga()
+	dataGeo = pd.DataFrame()
 	network = []
 	lat = []
 	lon =[]
 
 	a = 0
 	while (a < len(dataIp)):
-		dataGeo = dataGeo.append(Coordinadas.ipgeo(dataIp['network'][a]), ignore_index=True)
+		dataGeo = dataGeo.append(ipgeo(dataIp['network'][a]), ignore_index=True)
 		a = a + 1
 
 
@@ -40,14 +78,9 @@ def index(request):
 		lon.append(str(dataGeo['lon'][d]))
 		d = d + 1
 
-	print(lon)
 
 
-	context = {'network': network,
-			   'lat': lat,
-			   'lon': lon,
-			   'aux': 'aux'}
+	context = {'network': network, 'lat': lat, 'lon': lon}
 
-	#print(context)
 
-	return render(request, '/home/marcos/Documents/pi-AnalisisPaqueteria-Iago-Marcos-Daniel/probas/myciao/maps/probaMaps.html', context)
+	return render(request, 'probaMaps.html', context)

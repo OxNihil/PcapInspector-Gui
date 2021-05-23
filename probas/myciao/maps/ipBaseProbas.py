@@ -11,9 +11,6 @@ resources = package.resources
 for resource in resources:
     if resource.tabular:
         data = pd.read_csv(resource.descriptor['path'])
-        print(data)
-
-#print(type(data))
 
 engine = sa.create_engine( "sqlite:////tmp/db.sqlite" )
 db = pd.io.sql.SQLDatabase(engine)

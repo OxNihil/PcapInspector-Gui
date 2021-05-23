@@ -55,7 +55,7 @@ ROOT_URLCONF = 'myciao.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['maps'],
+        'DIRS': ['maps/Templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
