@@ -63,8 +63,8 @@ class analyze_dataframe():
 	    return self.df
 
 	def func(self, pct, allvals):
-	    absolute = int(round(pct/100.*np.sum(allvals)))
-            return "{:.1f}%\n({:d})".format(pct, absolute)
+		absolute = int(round(pct/100.*np.sum(allvals)))
+		return "{:.1f}%\n({:d})".format(pct, absolute)
 
 	def stats(self, column, title, legend):
 		valor = 3 #numero de items que queremos mostrar en la leyenda de forma independiente
