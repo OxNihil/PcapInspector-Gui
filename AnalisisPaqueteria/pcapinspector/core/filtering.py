@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 from .generate_csv import dataframe_to_model, model_to_dataframe
-from AnalisisPaqueteria.pcapinspector.models import *
+from pcapinspector.models import PcapInfo
 import matplotlib.pyplot as plt
 
 
@@ -42,12 +42,12 @@ class analyze_dataframe():
         self.df = df
 
     def get_endpoints_ip(self):
-        all_ips = df["ip_src"].dropna().unique()
+        all_ips = self.df["ip_src"].dropna().unique()
         all_ips = list(dict.fromkeys(all_ips))
         return all_ips
 
     def get_endpoints_mac(self):
-        all_mac = df["eth.src"].dropna().unique()
+        all_mac = self.df["eth.src"].dropna().unique()
         all_mac = list(dict.fromkeys(all_mac))
         return all_mac
 
@@ -71,7 +71,7 @@ class analyze_dataframe():
     def stats(self, column, title, legend):
         valor = 3  # numero de items que queremos mostrar en la leyenda de forma independiente
         fig, ax = plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
-        data = df[column].value_counts()
+        data = self.df[column].value_counts()
         protocols, values = data.index.tolist(), data.tolist()
         protocols_toprint, values_toprint = protocols[:valor], values[:valor]
         if len(values) > valor:
@@ -80,7 +80,7 @@ class analyze_dataframe():
             values_toprint.append(np.sum(values[valor:len(values)]))
 
         wedges, texts, autotexts = ax.pie(values_toprint,
-                                          autopct=lambda pct: analyze_dataframe(df).func(pct, values_toprint),
+                                          autopct=lambda pct: analyze_dataframe(self.df).func(pct, values_toprint),
                                           textprops=dict(color="w"))
         ax.legend(wedges, protocols_toprint,
                   title=legend,

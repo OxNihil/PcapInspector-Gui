@@ -4,7 +4,7 @@ import os
 import csv
 import json
 from django.conf import settings
-from AnalisisPaqueteria.pcapinspector.models import PcapInfo
+from pcapinspector.models import PcapInfo
 from django_pandas.io import read_frame
 
 
