@@ -20,5 +20,5 @@ from django.conf.urls import url,include
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^maps/', include('maps.urls')),
-    url(r'^pcap/', include('pcapinspector.urls')),
+    url(r'^', include('pcapinspector.urls')),
 ]

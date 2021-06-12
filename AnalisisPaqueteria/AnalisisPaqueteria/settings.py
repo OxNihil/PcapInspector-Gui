@@ -57,7 +57,7 @@ ROOT_URLCONF = 'AnalisisPaqueteria.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['maps/Templates'],
+        'DIRS': ['maps/Templates','pcapinspector/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

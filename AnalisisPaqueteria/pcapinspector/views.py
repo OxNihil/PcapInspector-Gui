@@ -9,7 +9,6 @@ from .core.generate_csv import load_pcap_to_model
 from .core.filtering import load_filters_to_model
 from .forms import FilterForm
 
-
 # Auxiliar
 
 def load_pcap(filename):
@@ -31,7 +30,6 @@ def index(request):
         if form.is_valid():
             port = form.cleaned_data.get('protocol')
             protocol = form.cleaned_data.get('port')
-            load_filters_to_model(protocol, port)
     else:
         form = FilterForm()
     # Datos captura
@@ -47,5 +45,5 @@ def upload(request):
         filename = fs.save(pcap_file.name, pcap_file)
         uploaded_file_url = fs.url(filename)
         context = load_pcap(uploaded_file_url)
-        return render(request, 'packets.html', context)
+        return render(request, 'upload.html', context)
     return render(request, 'upload.html')

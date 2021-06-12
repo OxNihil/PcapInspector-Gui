@@ -10,7 +10,7 @@ from django_pandas.io import read_frame
 
 def gen_csv(pcap_file):
     f_in = settings.BASE_DIR + pcap_file
-    f_out = "tmp/tmp.csv"
+    f_out = "pcapinspector/tmp/tmp.csv"
     tshark_template = 'tshark -r {} -T fields  -e frame.number -e frame.time -e eth.src -e eth.dst -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport  ' \
                       '-e udp.srcport -e udp.dstport -e ip.ttl -e _ws.col.Protocol -e ip.len -E header=y -E separator=, -E quote=d -E occurrence=f > {}'
     tshark_command = tshark_template.format(f_in, f_out)
@@ -25,8 +25,8 @@ def load_csv_to_model(path):
         # Saltamos las cabeceras
         next(reader, None)
         for row in reader:
-            srcport = ""
-            dstport = ""
+            srcport = 0
+            dstport = 0
             if (row[6] != ""):
                 srcport = row[6]
             else:

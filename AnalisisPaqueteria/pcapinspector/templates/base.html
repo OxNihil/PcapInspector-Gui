@@ -1,27 +1,31 @@
 <!DOCTYPE html>
 <html lang="es-es">
-{% load static %}
-<head>
+  {% load staticfiles %}
+  <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
     <title>PcapInspector</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="{% static " pcapinspector
-    /css/style.css" %}" rel="stylesheet">
-</head>
-<body>
-<header>
-    <h1>PcapInspector</h1>
-    <ul>
-        <li><a href="{% url 'index' %}">Home</a></li>
-        <li><a href="{% url 'upload' %}">Upload</a></li>
-        <li><a href="#">Detailed</a></li>
-        <li><a class="nav-link" href="#">Map</a></li>
-    </ul>
-</header>
-{% block content %}
-{% endblock %}
-</body>
+    <link href="{% static 'pcapinspector/css/style.css' %}" rel="stylesheet">
+    <script src="{% static 'pcapinspector/js/jquery-3.6.0.js' %}"></script>
+    <script type="text/javascript" src="{% static "pcapinspector/js/navbar.js" %}"></script>
+  </head>
+  <body>
+  	<header>
+  		<h1>PcapInspector</h1>
+  	</header>
+  	<nav class="sidebar-navigation">
+		<ul>
+			<li class="active"><span data-url="{% url 'index' %}">Home</span></li>
+			<li><span data-url="">PcapList</span></li>
+			<li><span data-url="{% url 'upload' %}">Upload</span></li>
+			<li><span data-url="{% url 'map' %}">Map</span></li>
+			<li><span data-url="">Stats</span></li>
+		</ul>
+	</nav>
+  	{% block content %}
+    	{% endblock content %}
+  </body>
 </html>
