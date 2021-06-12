@@ -20,34 +20,38 @@ def gen_csv(pcap_file):
 
 # frame.number,frame.time,eth.src,eth.dst,ip.src,ip.dst,tcp.srcport,tcp.dstport,udp.srcport,udp.dstport,ip.ttl,_ws.col.Protocol,ip.len
 def load_csv_to_model(path):
-    with open(path) as f:
-        reader = csv.reader(f)
-        # Saltamos las cabeceras
-        next(reader, None)
-        for row in reader:
-            srcport = 0
-            dstport = 0
-            if (row[6] != ""):
-                srcport = row[6]
-            else:
-                srcport = row[8]
-            if (row[7] != ""):
-                dstport = row[7]
-            else:
-                dstport = row[9]
-            _, created = PcapInfo.objects.get_or_create(
-                frame_number=row[0],
-                frame_time=row[1],
-                eth_src=row[2],
-                eth_dst=row[3],
-                ip_src=row[4],
-                ip_dst=row[5],
-                src_port=int(srcport),
-                dst_port=int(dstport),
-                ttl=row[10],
-                protocol=row[11],
-                ip_len=row[12]
-            )
+	with open(path) as f:
+		reader = csv.reader(f)
+		# Saltamos las cabeceras
+		next(reader, None)
+		for row in reader:
+			try:
+				srcport = ""
+				dstport = ""
+				if (row[6] != ""):
+					srcport = row[6]
+				elif (row[8] != ""):
+					srcport = row[8]
+				if (row[7] != ""):
+					dstport = row[7]
+				elif(row[9] != ""):
+					dstport = row[9]
+				_ , created = PcapInfo.objects.get_or_create(
+		            frame_number=row[0],
+		            frame_time=row[1],
+		            eth_src=row[2],
+		            eth_dst=row[3],
+		            ip_src=row[4],
+		            ip_dst=row[5],
+		            src_port=srcport,
+		            dst_port=dstport,
+		            ttl=row[10],
+		            protocol=row[11],
+		            ip_len=row[12]
+		            )
+			except:
+				continue
+		        
 
 
 def load_pcap_to_model(pcap_file):
