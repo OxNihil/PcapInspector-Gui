@@ -1,6 +1,5 @@
 from django.conf.urls import include, url
-from pcapinspector import views
-
+from . import views
 urlpatterns=[
 	url(r'^$', views.index, name='index'),
 	url(r'^upload/', views.upload, name='upload'),

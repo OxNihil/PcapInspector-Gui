@@ -3,10 +3,10 @@
 {% load static %}
 
 {% block content %}
-  <form method="post" enctype="multipart/form-data">
+<form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <input type="file" name="pcap">
     <button type="submit">Upload</button>
-  </form>
+</form>
 
 {% endblock %}
