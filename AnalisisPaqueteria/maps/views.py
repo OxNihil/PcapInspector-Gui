@@ -4,57 +4,38 @@ import sqlalchemy as sa
 import pandas.io.sql as sql
 import requests
 import datapackage
+from pcapinspector.models import PcapInfo
 
-
-
-
-def saveData():
-	data_url = 'https://datahub.io/core/geoip2-ipv4/datapackage.json'
-
-	# to load Data Package into storage
-	package = datapackage.Package(data_url)
-
-	resources = package.resources
-	for resource in resources:
-		if resource.tabular:
-			data = pd.read_csv(resource.descriptor['path'])
-
-	engine = sa.create_engine( "sqlite:////tmp/db.sqlite" )
-	db = pd.io.sql.SQLDatabase(engine)
-	tb = pd.io.sql.SQLTable(name="IPs", pandas_sql_engine=db, frame=data)
-	tb.create()
-	tb.insert()
-
-# Create your views here.
 
 def load():
-	engine = sa.create_engine("sqlite:////tmp/db.sqlite")
-	meta = sa.MetaData()
-	tb = sa.Table("IPs", meta, autoload_with=engine)
+	ip_result = []
+	ip_return = []
+	ip_info = PcapInfo.objects.all()
 
-	db = pd.io.sql.SQLDatabase(engine, meta=meta)
+	for ip in ip_info:
+		ip_result.append(ip.ip_src)
+		ip_result.append(ip.ip_dst)
 
-	df = db.read_table("IPs")
+	ip_list = pd.DataFrame({'network': ip_result})
+	ip_list = ip_list['network'].dropna().unique()
 
-	data = df.head(100)
+	print(ip_list)
 
-	data = data['network']
 
-	arrayDatos = data.to_numpy()
+	for ip in ip_list :
+		public = ip.split('.')
+		num = int(public[0])
+		if ((num >= 1 & num <=126) | (num >= 128 & num <=191) | (num >= 192 & num <=223)) :
+			ip_return.append(ip)
 
-	for x in range(10):
-		head, sep, tail = arrayDatos[x].partition('/')
-		arrayDatos[x] = head
+	ip_list = pd.DataFrame({'network': ip_return})
 
-	dataF = pd.DataFrame(arrayDatos, columns=['network'])
+	return ip_list
 
-	return dataF
 
 def ipgeo(ip):
 
     url1 = "https://sys.airtel.lv/ip2country/" + ip + "/?full=true" #por ahora iremos usando esta
-
-    #url1 = "http://api.ipstack.com/" + ip + "?access_key=fa3ea559085abe8f4a3eebbebd35695a"
 
     r = requests.get(url1)
     data = r.json()
@@ -66,12 +47,12 @@ def ipgeo(ip):
 
 
 def index(request):
-	try:
-		saveData()
-		pass
-	except Exception as e:
-		print(e)
+
 	dataIp = load()
+
+	if dataIp.empty:
+		return render(request, 'nopcap.html') #Hai que comprobar na vista que non se recive nada nos templates
+
 	dataGeo = pd.DataFrame()
 	network = []
 	lat = []
@@ -93,4 +74,4 @@ def index(request):
 	context = {'network': network, 'lat': lat, 'lon': lon}
 
 
-	return render(request, 'probaMaps.html', context)
+	return render(request, 'maps.html', context)
