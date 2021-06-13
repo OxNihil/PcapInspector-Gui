@@ -1,3 +1,5 @@
+import base64
+
 import pandas as pd
 import numpy as np
 import os
@@ -5,6 +7,7 @@ from .generate_csv import dataframe_to_model, model_to_dataframe
 from pcapinspector.models import PcapInfo
 import matplotlib.pyplot as plt
 from django.conf import settings
+from io import StringIO, BytesIO
 
 
 class filters():
@@ -70,13 +73,14 @@ class analyze_dataframe():
         return "{:.1f}%\n({:d})".format(pct, absolute)
 
     def stats(self, column, title, legend):
-        valor = 3  # numero de items que queremos mostrar en la leyenda de forma independiente
+        valor = 4  # numero de items que queremos mostrar en la leyenda de forma independiente
         fig, ax = plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
         data = self.df[column].value_counts()
         protocols, values = data.index.tolist(), data.tolist()
         protocols_toprint, values_toprint = protocols[:valor], values[:valor]
         if len(values) > valor:
-            protocols_toprint.append("Others: " + str(protocols[valor:len(protocols)]))
+            #protocols_toprint.append("Others: " + str(protocols[valor:len(protocols)]))
+            protocols_toprint.append("Others")
 
             values_toprint.append(np.sum(values[valor:len(values)]))
 
@@ -91,7 +95,15 @@ class analyze_dataframe():
         plt.setp(autotexts, size=8, weight="bold")
         ax.set_title(title)
         # analyze_dataframe(df).stats('_ws.col.Protocol', "Listado de protocolos", "Protocolos")
-        plt.savefig(legend + ".png")
+        #plt.savefig(legend + ".png")
+        buffer = BytesIO()
+        plt.savefig(buffer, format='png')
+        buffer.seek(0)
+        data = buffer.getvalue()
+        graph = base64.b64encode(data)
+        graph = graph.decode('utf-8')
+        buffer.close()
+        return graph
 
 
 # Registro

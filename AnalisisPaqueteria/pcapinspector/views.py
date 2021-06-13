@@ -9,8 +9,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 
 from .core.generate_csv import load_pcap_to_model
-from .core.filtering import load_filters_to_model
+from .core.filtering import load_filters_to_model, analyze_dataframe
 from .forms import FilterForm, LoginForm, SignupForm
+from django_pandas.io import read_frame
 
 
 # Auxiliar
@@ -113,3 +114,15 @@ def upload(request):
 
     return render(request, 'upload.html',
                   {'login_form': login_form, 'signup_form ': signup_form, 'login_error': login_error})
+
+
+@login_required(login_url='/login')
+def stats(request):
+    pcap_data = PcapInfo.objects.all()
+    df = read_frame(pcap_data)
+    # x = [x.protocol for x in pcap_data]
+    chart_prots = analyze_dataframe(df).stats('protocol', 'Listado de protocolos', 'protocols')
+    chart_ip_src = analyze_dataframe(df).stats('ip_src', 'Direcciones IPs de origen', 'IPs')
+    chart_ip_dst = analyze_dataframe(df).stats('ip_dst', 'Direcciones IPs de destino', 'IPs')
+
+    return render(request, 'stats.html', {'chart1': chart_prots, 'chart2': chart_ip_src, 'chart3': chart_ip_dst})

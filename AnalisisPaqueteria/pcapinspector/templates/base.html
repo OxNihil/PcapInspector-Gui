@@ -26,7 +26,7 @@
 			<li><span data-url="">PcapList</span></li>
 			<li><span data-url="{% url 'upload' %}">Upload</span></li>
 			<li><span data-url="{% url 'map' %}">Map</span></li>
-			<li><span data-url="">Stats</span></li>
+			<li><span data-url="{% url 'stats' %}">Stats</span></li>
             {% if user.is_authenticated %}
             <li><span data-url="{% url 'logout_view' %}?next={{ request.path }}">Logout</span></li>
             {% else %}
