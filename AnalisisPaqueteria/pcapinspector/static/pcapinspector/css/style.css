@@ -50,8 +50,8 @@
 
 #upload{padding:10px;margin-left:100px;}
 
-#id_port {width:90%;}
-#id_portdst {width:90%;}
+#id_mac {width:90%;}
+#id_macdst {width:90%;}
 #id_ip {width:90%;}
 #id_ipdst {width:90%;}
 
@@ -69,9 +69,12 @@
   color: white;
 }
 
+#pages {float:left;margin:20px;}
+.paginas {background-color:black;color:white;float:left;margin:5px;padding:4px;cursor:pointer;}
+
 /* boton filtrado*/
-.menu-filtrado {display:none;}
-.menu-filtrado.active{display:block;}
+.menu-filtrado {display:none;overflow:hidden;}
+.menu-filtrado.active{display:block;overflow:hidden;}
 
 .filter-container{width:15%;float:left;}
 .filter-container div {clear:both;}

@@ -24,14 +24,7 @@ def load_pcap(filename):
 
 # Create your views here.
 def index(request):
-    # si el formulario es valido filtramos
-    if request.method == "POST":
-        form = FilterForm(request.POST)
-        if form.is_valid():
-            port = form.cleaned_data.get('protocol')
-            protocol = form.cleaned_data.get('port')
-    else:
-        form = FilterForm()
+    form = FilterForm()
     # Datos captura
     pcap_data = PcapInfo.objects.all()
     context = {'all_packets': pcap_data, 'form': form}
