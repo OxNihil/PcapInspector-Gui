@@ -2,7 +2,7 @@
 
 {% load staticfiles %}
 
-{% block content %}
+{% block content %}{% if request.user.is_authenticated %}
 <div id="ProgressBar">
   <div id="Bar"></div>
 </div>
@@ -46,5 +46,10 @@ function move() {
 </script>
 {% endblock %}
 
+{% else %}
+<div class="container">
+  {{login_error}}
+  <p> You must be logged to upload a file </p>
 
-{% endblock %}
+</div>
+{% endif%}{% endblock %}

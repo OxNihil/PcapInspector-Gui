@@ -76,6 +76,9 @@
 .menu-filtrado {display:none;overflow:hidden;}
 .menu-filtrado.active{display:block;overflow:hidden;}
 
+.loggin {display:none;}
+.loggin.active {display:block;}
+
 .filter-container{width:15%;float:left;}
 .filter-container div {clear:both;}
 /*Lista de elementos pa filtrar*/

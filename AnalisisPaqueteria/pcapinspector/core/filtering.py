@@ -4,6 +4,7 @@ import os
 from .generate_csv import dataframe_to_model, model_to_dataframe
 from pcapinspector.models import PcapInfo
 import matplotlib.pyplot as plt
+from django.conf import settings
 
 
 class filters():

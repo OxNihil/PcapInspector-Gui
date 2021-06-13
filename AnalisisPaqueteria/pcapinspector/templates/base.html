@@ -14,7 +14,11 @@
   </head>
   <body>
   	<header>
-  		<h1>PcapInspector</h1>
+        {% if user.is_authenticated %}
+  		<h1>PcapInspector - {{request.user.username}}</h1>
+        {% else %}
+        <h1>PcapInspector</h1>
+        {% endif %}
   	</header>
   	<nav class="sidebar-navigation">
 		<ul>
@@ -23,6 +27,12 @@
 			<li><span data-url="{% url 'upload' %}">Upload</span></li>
 			<li><span data-url="{% url 'map' %}">Map</span></li>
 			<li><span data-url="">Stats</span></li>
+            {% if user.is_authenticated %}
+            <li><span data-url="{% url 'logout_view' %}?next={{ request.path }}">Logout</span></li>
+            {% else %}
+            <li ><span data-url="{% url 'login' %}">Login</span></li>
+            <li><span data-url="{% url 'register' %}">Register</span></li>
+            {% endif %}
 		</ul>
 	</nav>
   	{% block content %}
