@@ -5,7 +5,7 @@ import pandas.io.sql as sql
 import requests
 import datapackage
 from pcapinspector.models import PcapInfo
-
+from django.contrib.auth.decorators import login_required
 
 def load():
 	ip_result = []
@@ -18,9 +18,6 @@ def load():
 
 	ip_list = pd.DataFrame({'network': ip_result})
 	ip_list = ip_list['network'].dropna().unique()
-
-	print(ip_list)
-
 
 	for ip in ip_list :
 		public = ip.split('.')
@@ -43,13 +40,10 @@ def ipgeo(ip):
 
     r = requests.get(url1)
     data = r.json()
-
     dataframe = {'network': ip, 'lat': data['lat'], 'lon': data['lon']}
-
-
     return dataframe
 
-
+@login_required(login_url='/login')
 def index(request):
 
 	dataIp = load()
@@ -74,10 +68,6 @@ def index(request):
 		lon.append(str(dataGeo['lon'][b]))
 		b = b + 1
 
-
 	context = {'network': network, 'lat': lat, 'lon': lon}
-
-	print(context)
-
 
 	return render(request, 'maps.html', context)

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{%block content%}
+<script src="{% static "pcapinspector/js/filters.js" %}"></script>
+<script src="{% static "pcapinspector/js/pages.js" %}"></script>
+
+<div style = "position:relative;left:20px;top:2px;">
+
+    <h1>Pcap List</h1>
+
+    {% if list_pcaps %}
+    <ul style="list-style-type:none;">
+
+      {% for pcap in list_pcaps %}
+      <li>
+        {{pcap}}
+      </li>
+      {% endfor %}
+
+    </ul>
+    {% else %}
+      <p>There is no pcap</p>
+    {% endif %}
+</div>
+{% endblock %}

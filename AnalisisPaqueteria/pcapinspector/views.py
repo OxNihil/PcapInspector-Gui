@@ -57,6 +57,15 @@ def logout_view(request):
     logout(request)
     return redirect(request.GET['next'])
 
+def list_pcaps():      
+    context = {}
+    # List of files in your MEDIA_ROOT
+    media_path = settings.MEDIA_ROOT
+    myfiles = [f for f in listdir(media_path) if isfile(join(media_path, f))]
+    context['list_pcaps'] = myfiles
+
+    return context
+
 
 # Create your views here.
 def index(request):
@@ -126,3 +135,9 @@ def stats(request):
     chart_ip_dst = analyze_dataframe(df).stats('ip_dst', 'Direcciones IPs de destino', 'IPs')
 
     return render(request, 'stats.html', {'chart1': chart_prots, 'chart2': chart_ip_src, 'chart3': chart_ip_dst})
+
+@login_required(login_url='/login')
+def pcaps(request):
+    context = list_pcaps()
+    print(context)
+    return render(request, 'pcaps.html', context)
