@@ -12,6 +12,10 @@ from .core.generate_csv import load_pcap_to_model
 from .core.filtering import load_filters_to_model, analyze_dataframe
 from .forms import FilterForm, LoginForm, SignupForm
 from django_pandas.io import read_frame
+import os.path
+from django.conf import settings
+from os import listdir, path
+from os.path import isfile, join
 
 
 # Auxiliar
@@ -58,11 +62,16 @@ def logout_view(request):
     return redirect(request.GET['next'])
 
 def list_pcaps():      
-    context = {}
+    context = {
+        'list_pcaps':[],
+        'path_pcaps':[]
+    }
     # List of files in your MEDIA_ROOT
     media_path = settings.MEDIA_ROOT
     myfiles = [f for f in listdir(media_path) if isfile(join(media_path, f))]
     context['list_pcaps'] = myfiles
+    for f in myfiles:
+        context['path_pcaps'].append(settings.MEDIA_ROOT + "/" + f)
 
     return context
 
