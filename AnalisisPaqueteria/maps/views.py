@@ -24,8 +24,12 @@ def load():
 
 	for ip in ip_list :
 		public = ip.split('.')
-		num = int(public[0])
-		if ((num >= 1 & num <=126) | (num >= 128 & num <=191) | (num >= 192 & num <=223)) :
+		num1 = int(public[0])
+		num2 = int(public[1])
+		if ((num1 == 10) | (num1 == 172 & num2 >=16 & num2 <= 31) 
+			| (num1 == 192 & num2 == 168)) :
+			continue
+		else:
 			ip_return.append(ip)
 
 	ip_list = pd.DataFrame({'network': ip_return})
@@ -72,6 +76,8 @@ def index(request):
 
 
 	context = {'network': network, 'lat': lat, 'lon': lon}
+
+	print(context)
 
 
 	return render(request, 'maps.html', context)

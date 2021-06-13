@@ -31,29 +31,85 @@
                 var lat = Array();
                 var lon = Array();
                 var ip = Array();
+                var latbef = null;
+                var lonbef = null;
+                var text = null;
 
                 ip = {{ network|safe }};
                 lat = ({{ lat|safe }});
                 lon = {{ lon|safe }};
 
-                for (var j = 0; j < ip.length; j++) {
+                for (var j = 0; j <= ip.length; j++) {
+                  if (j >= ip.length) {
+                    var myLatLng = {lat: latbef, lng: lonbef};
+
+                    var marker = new google.maps.Marker({
+                        position: myLatLng,
+                        map,
+                        title: text,
+                        icon: {
+                          labelOrigin: new google.maps.Point(16,64),
+                          url: "https://drive.google.com/uc?id=0B3RD6FDNxXbdVXRhZHFnV2xaS1E"
+                        },
+                        label: {
+                          text: text,
+                          color: "black",
+                          fontWeight: "bold",
+                          fontSize: "15px"
+                        }
+                    });
+                  } else {
+
                     var latUse = lat[j];
                     var lngUse = lon[j];
 
                     latUse = parseFloat(latUse);
                     lngUse = parseFloat(lngUse);
 
-                    var myLatLng = {lat: latUse, lng: lngUse};
 
-                    var marker = new google.maps.Marker({
-                        position: myLatLng,
-                        map,
-                        title: ip[j],
-                    });
+                    if (text == null){
+                      text = ip[j];
+                      latbef = latUse;
+                      lonbef = lngUse;
+                      continue
+
+                    } else {
+                      
+                      if ((latUse == latbef) & (lngUse == lonbef)) {
+                        text = text + " | " + ip[j]
+                        continue
+                      } else {
+
+                        var myLatLng = {lat: latbef, lng: lonbef};
+
+
+                        var marker = new google.maps.Marker({
+                            position: myLatLng,
+                            map,
+                            title: text,
+                            icon: {
+                              labelOrigin: new google.maps.Point(16,64),
+                              url: "https://drive.google.com/uc?id=0B3RD6FDNxXbdVXRhZHFnV2xaS1E"
+                            },
+                            label: {
+                              text: text,
+                              color: "black",
+                              fontWeight: "bold",
+                              fontSize: "15px"
+                            }
+                        });
+
+
+                        text = ip[j];
+                        latbef = latUse;
+                        lonbef = lngUse;
+                        continue
+                      }
+                    }
 
                     // To add the marker to the map, call setMap();
 
-
+                  }
                 }
                 marker.setMap(map);
             }
