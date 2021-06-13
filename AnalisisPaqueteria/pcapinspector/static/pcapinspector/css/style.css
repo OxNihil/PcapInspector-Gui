@@ -1,0 +1,141 @@
+/* Navbar */
+.sidebar-navigation {
+   display: inline-block;
+   min-height: 100vh;
+   min-width: 80px;
+   background-color: #313443;
+   float: left;
+   margin:0;
+   font-family:'Lato',sans-serif;
+}   
+
+.sidebar-navigation ul {
+	text-align: center;
+	color: white;
+	list-style:none;
+	margin:0;
+	padding:0;
+}
+
+.sidebar-navigation li {
+	padding: 28px;
+	cursor: pointer;
+	transition: all ease-out 120ms;	
+	text-decoration:none;
+	border-bottom:1px solid white;
+}
+
+	
+.sidebar-navigation li:hover {
+	background-color: #efefef;
+	color:black;
+}	
+
+.sidebar-navigation ul li.active {
+	background-color: black;
+	color:white;
+}	
+
+.sidebar-navigation span{
+	margin:0;
+	padding:0;
+	text-transform:uppercase;
+}
+
+/* packet-list */
+#packet-table{
+	float:left;
+	width:75%;
+}
+
+#upload{padding:10px;margin-left:100px;}
+
+#id_mac {width:90%;}
+#id_macdst {width:90%;}
+#id_ip {width:90%;}
+#id_ipdst {width:90%;}
+
+.filter-button{width:100%;border-radius:0;}
+
+#packet-table tr:nth-child(even){background-color: #f2f2f2;}
+
+#packet-table tr:hover {background-color: #ddd;}
+
+#packet-table th {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  text-align: center;
+  background-color:  #313443;
+  color: white;
+}
+
+#pages {float:left;margin:20px;}
+.paginas {background-color:black;color:white;float:left;margin:5px;padding:4px;cursor:pointer;}
+
+/* boton filtrado*/
+.menu-filtrado {display:none;overflow:hidden;}
+.menu-filtrado.active{display:block;overflow:hidden;}
+
+.filter-container{width:15%;float:left;}
+.filter-container div {clear:both;}
+/*Lista de elementos pa filtrar*/
+.filter { width:90%; height:auto;transition:all 0.5 ease;margin: 10px;padding:0;float:left;background-color:white;border:1px solid black;}
+.filter h4 {color:white;text-transform:uppercase;text-align:center;padding:8px;margin:0;float:left;background-color:black;width:92%;}
+.filter ul {list-style:none;padding:0;}
+.filter ul li {display:block;color:black;border-bottom:1px solid #3E5BED;text-transform:uppercase;text-align:center;background-color:#efefef;padding:6px;}
+.filter ul li:hover {background-color:#3E5BED;cursor:pointer;color:white;}
+
+
+body{margin:0;padding:0;}
+
+header {
+ background-color:#3E5BED;
+ text-align:center;
+ margin:0;
+ padding:0;
+ width:100%;
+}
+
+header h1 {
+  margin:0;
+  padding:4px;
+  color:white;
+  font-family:'Lato',sans-serif;
+}
+
+header ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  width:100%;
+}
+
+
+main {
+   background-color:white;
+}
+
+
+form {
+  margin:0;
+}
+
+form p {
+	float:left;
+	margin-right:4px;
+}
+
+#ProgressBar {
+  width: 100%;
+  background-color: grey;
+  display:none;
+}
+
+#Bar {
+  width: 1%;
+  height: 30px;
+  background-color: green;
+}
+
+
+

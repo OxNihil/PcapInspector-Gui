@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block content %}{% if request.user.is_authenticated %}
+<div id="ProgressBar">
+  <div id="Bar"></div>
+</div>
+
+  <form method="post" enctype="multipart/form-data" id="upload">
+    {% csrf_token %}
+    <input type="file" name="pcap">
+    <button type="submit" onclick="move()">Upload</button>
+  </form>
+  {% if uploaded_file_url %}
+    <p>File uploaded at: <a href="{{ uploaded_file_url }}">{{ uploaded_file_url }}</a></p>
+  {% endif %}
+
+
+{% block js %}
+
+
+<script>
+var i = 0;
+function move() {
+  if (i == 0) {
+    i = 1;
+    var elem = document.getElementById("Bar");
+    var pelem = document.getElementById("ProgressBar");
+    pelem.style.display = "block";
+    var width = 1;
+    var id = setInterval(frame, 40);
+    function frame() {
+      if (width >= 100) {
+        clearInterval(id);
+        i = 0;
+        width=0;
+        move()
+      } else {
+        width++;
+        elem.style.width = width + "%";
+      }
+    }
+  }
+}
+</script>
+{% endblock %}
+
+{% else %}
+<div class="container">
+  {{login_error}}
+  <p> You must be logged to upload a file </p>
+
+</div>
+{% endif%}{% endblock %}

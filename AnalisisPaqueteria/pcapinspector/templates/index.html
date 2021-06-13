@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content %}
+<script src="{% static "pcapinspector/js/filters.js" %}"></script>
+<script src="{% static "pcapinspector/js/pages.js" %}"></script>
+<main>
+	<!-- Filter Menu -->
+	<div class="filter-container">
+		<div class="filter">
+			<h4>Protocols &#9660;</h4>
+			<div class="menu-filtrado">
+				<ul class="listado">
+					<li>ARP</li>
+					<li>DNS</li>
+					<li>FTP</li>
+					<li>HTTP</li>
+					<li>TCP</li>
+					<li>UDP</li>
+					<li>ALL</li>
+				</ul> 
+			</div>
+		</div>
+		<div class="filter">
+			<h4>IP Source &#9660;</h4>
+			<div class="menu-filtrado">
+				<form method="POST" class="post-form" id="ipsrc-form">
+					{% csrf_token %}
+       					{{ form.ip }}
+       					<button type="submit" class="filter-button">Filtrar</button>
+				</form>
+			</div>
+		</div>
+		<div class="filter">
+			<h4>IP Dest &#9660;</h4>
+			<div class="menu-filtrado">
+				<form method="POST" class="post-form" id="ipdst-form">
+					{% csrf_token %}
+       					{{ form.ipdst }}
+       					<button type="submit" class="filter-button">Filtrar</button>
+				</form>
+			</div>
+		</div>
+		<div class="filter">
+			<h4>MAC source &#9660;</h4>
+			<div class="menu-filtrado">
+				<form method="POST" class="post-form" id="macsrc-form">
+					{% csrf_token %}
+       					{{ form.mac }}
+       					<button type="submit" class="filter-button">Filtrar</button>
+				</form>
+			</div>
+		</div>
+		<div class="filter">
+			<h4>MAC dest &#9660;</h4>
+			<div class="menu-filtrado">
+				<form method="POST" class="post-form" id="macdst-form">
+					{% csrf_token %}
+       					{{ form.macdst }}
+       					<button type="submit" class="filter-button">Filtrar</button>
+				</form>
+			</div>
+		</div>
+	</div>
+	<!-- Table --> 
+	<table id="packet-table">
+	<tr id="table-header">
+		<th>Frame</th>
+		<th>Time</th>
+		<th>MAC src</th>
+		<th>MAC dst</th>
+		<th>IP src</th>
+		<th>IP dst</th>
+		<th>Protocol</th>
+		<th>Len</th>
+	   </tr>
+	{% if all_packets %}
+		 {% for packet in all_packets %}
+		  <tr id="{{ packet.frame_number}}">
+			<td id="frn" >{{ packet.frame_number}}</td>
+			<td id="ftime">{{ packet.frame_time}}</td>
+			<td id="ethsrc" class="{{ packet.eth_src }}">{{ packet.eth_src }}</td>
+			<td id="ethdst" class="{{ packet.eth_dst }}">{{ packet.eth_dst }}</td>
+			<td id="ipsrc" class="{{ packet.ip_src }}" >{{ packet.ip_src }}</td>
+			<td id="ipdst" class="{{ packet.ip_dst}}" >{{ packet.ip_dst}}</td>
+			<td id="protocol" class="{{packet.protocol}}">{{ packet.protocol}}</td>
+			<td>{{ packet.ip_len}}</td>
+		  </tr>
+		  {% endfor %}
+	{% endif %}
+	</table>
+	<div id="pages"></div>
+</main> 
+{% endblock %}
+

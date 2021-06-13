@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es-es">
+  {% load staticfiles %}
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>PcapInspector</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{% static 'pcapinspector/css/style.css' %}" rel="stylesheet">
+    <script src="{% static 'pcapinspector/js/jquery-3.6.0.js' %}"></script>
+    <script type="text/javascript" src="{% static "pcapinspector/js/navbar.js" %}"></script>
+  </head>
+  <body>
+  	<header>
+        {% if user.is_authenticated %}
+  		<h1>PcapInspector - {{request.user.username}}</h1>
+        {% else %}
+        <h1>PcapInspector</h1>
+        {% endif %}
+  	</header>
+  	<nav class="sidebar-navigation">
+		<ul>
+			<li class="active"><span data-url="{% url 'index' %}">Home</span></li>
+			<li><span data-url="">PcapList</span></li>
+			<li><span data-url="{% url 'upload' %}">Upload</span></li>
+			<li><span data-url="{% url 'map' %}">Map</span></li>
+			<li><span data-url="">Stats</span></li>
+            {% if user.is_authenticated %}
+            <li><span data-url="{% url 'logout_view' %}?next={{ request.path }}">Logout</span></li>
+            {% else %}
+            <li><span data-url="">Login</span></li>
+            <div role="tabpanel" class="tab-pane active" id="loginTab">
+                <p>{% load crispy_forms_tags %} {% crispy login_form login_form.helper %}</p>
+                <span onclick="this.parentElement.style.display='none'">Close</span>
+            </div>
+            <li><span data-url="">Register</span></li>
+            <div role="tabpanel" class="tab-pane" id="registerTab">
+				<p>{% load crispy_forms_tags %} {% crispy signup_form signup_form.helper %}</p>
+                <span onclick="this.parentElement.style.display='none'">Close</span>
+            </div>
+
+            {% endif %}
+		</ul>
+	</nav>
+  	{% block content %}
+    {% endblock %}
+  </body>
+</html>
