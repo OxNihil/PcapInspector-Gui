@@ -33,19 +33,6 @@ class SignupForm(forms.Form, UserCreationForm):
         self.helper.add_input(Submit('registrar', 'Registrar'))
 
 
-class RegisterForm(AuthenticationForm):
-    def __init__(self, *args, **kwargs):
-        super(RegisterForm, self).__init__(*args, **kwargs)
-
-        self.helper = FormHelper()
-        self.helper.layout = Layout(
-            'username',
-            'password',
-            ButtonHolder(
-                Submit('register', 'Register', css_class='btn-primary')
-            )
-        )
-
 
 class LoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):

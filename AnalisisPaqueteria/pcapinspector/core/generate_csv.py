@@ -6,7 +6,8 @@ import json
 from django.conf import settings
 from pcapinspector.models import PcapInfo
 from django_pandas.io import read_frame
-
+from scapy.all import IP
+from scapy.layers import http
 
 def gen_csv(pcap_file):
     f_in = settings.BASE_DIR + pcap_file
@@ -20,38 +21,37 @@ def gen_csv(pcap_file):
 
 # frame.number,frame.time,eth.src,eth.dst,ip.src,ip.dst,tcp.srcport,tcp.dstport,udp.srcport,udp.dstport,ip.ttl,_ws.col.Protocol,ip.len
 def load_csv_to_model(path):
-	with open(path) as f:
-		reader = csv.reader(f)
-		# Saltamos las cabeceras
-		next(reader, None)
-		for row in reader:
-			try:
-				srcport = ""
-				dstport = ""
-				if (row[6] != ""):
-					srcport = row[6]
-				elif (row[8] != ""):
-					srcport = row[8]
-				if (row[7] != ""):
-					dstport = row[7]
-				elif(row[9] != ""):
-					dstport = row[9]
-				_ , created = PcapInfo.objects.get_or_create(
-		            frame_number=row[0],
-		            frame_time=row[1],
-		            eth_src=row[2],
-		            eth_dst=row[3],
-		            ip_src=row[4],
-		            ip_dst=row[5],
-		            src_port=srcport,
-		            dst_port=dstport,
-		            ttl=row[10],
-		            protocol=row[11],
-		            ip_len=row[12]
-		            )
-			except:
-				continue
-		        
+    with open(path) as f:
+        reader = csv.reader(f)
+        # Saltamos las cabeceras
+        next(reader, None)
+        for row in reader:
+            try:
+                srcport = ""
+                dstport = ""
+                if (row[6] != ""):
+                    srcport = row[6]
+                elif (row[8] != ""):
+                    srcport = row[8]
+                if (row[7] != ""):
+                    dstport = row[7]
+                elif (row[9] != ""):
+                    dstport = row[9]
+                _, created = PcapInfo.objects.get_or_create(
+                    frame_number=row[0],
+                    frame_time=row[1],
+                    eth_src=row[2],
+                    eth_dst=row[3],
+                    ip_src=row[4],
+                    ip_dst=row[5],
+                    src_port=srcport,
+                    dst_port=dstport,
+                    ttl=row[10],
+                    protocol=row[11],
+                    ip_len=row[12]
+                )
+            except:
+                continue
 
 
 def load_pcap_to_model(pcap_file):
@@ -80,3 +80,14 @@ def dataframe_to_model(df, modelo):
     for dic in json_list:
         modelo.objects.get_or_create(**dic)
     return modelo
+
+def get_urls(pcap_file):
+    '''
+    Processes a TCP packet, and if it contains an HTTP request, it prints it.
+    '''
+    if not pcap_file.haslayer(http.HTTPRequest):
+        # This packet doesn't contain an HTTP request so we skip it
+        return
+    http_layer = pcap_file.getlayer(http.HTTPRequest)
+    ip_layer = pcap_file.getlayer(IP)
+    print('\n{0[src]} requested a {1[Method]} {1[Host]}{1[Path]}'.format(ip_layer.fields, http_layer.fields))

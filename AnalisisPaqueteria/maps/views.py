@@ -4,74 +4,53 @@ import sqlalchemy as sa
 import pandas.io.sql as sql
 import requests
 import datapackage
-
-
-
-
-def saveData():
-	data_url = 'https://datahub.io/core/geoip2-ipv4/datapackage.json'
-
-	# to load Data Package into storage
-	package = datapackage.Package(data_url)
-
-	resources = package.resources
-	for resource in resources:
-		if resource.tabular:
-			data = pd.read_csv(resource.descriptor['path'])
-
-	engine = sa.create_engine( "sqlite:////tmp/db.sqlite" )
-	db = pd.io.sql.SQLDatabase(engine)
-	tb = pd.io.sql.SQLTable(name="IPs", pandas_sql_engine=db, frame=data)
-	tb.create()
-	tb.insert()
-
-# Create your views here.
+from pcapinspector.models import PcapInfo
+from django.contrib.auth.decorators import login_required
 
 def load():
-	engine = sa.create_engine("sqlite:////tmp/db.sqlite")
-	meta = sa.MetaData()
-	tb = sa.Table("IPs", meta, autoload_with=engine)
+	ip_result = []
+	ip_return = []
+	ip_info = PcapInfo.objects.all()
 
-	db = pd.io.sql.SQLDatabase(engine, meta=meta)
+	for ip in ip_info:
+		ip_result.append(ip.ip_src)
+		ip_result.append(ip.ip_dst)
 
-	df = db.read_table("IPs")
+	ip_list = pd.DataFrame({'network': ip_result})
+	ip_list = ip_list['network'].dropna().unique()
 
-	data = df.head(100)
+	for ip in ip_list :
+		public = ip.split('.')
+		num1 = int(public[0])
+		num2 = int(public[1])
+		if ((num1 == 10) | (num1 == 172 & num2 >=16 & num2 <= 31) 
+			| (num1 == 192 & num2 == 168)) :
+			continue
+		else:
+			ip_return.append(ip)
 
-	data = data['network']
+	ip_list = pd.DataFrame({'network': ip_return})
 
-	arrayDatos = data.to_numpy()
+	return ip_list
 
-	for x in range(10):
-		head, sep, tail = arrayDatos[x].partition('/')
-		arrayDatos[x] = head
-
-	dataF = pd.DataFrame(arrayDatos, columns=['network'])
-
-	return dataF
 
 def ipgeo(ip):
 
     url1 = "https://sys.airtel.lv/ip2country/" + ip + "/?full=true" #por ahora iremos usando esta
 
-    #url1 = "http://api.ipstack.com/" + ip + "?access_key=fa3ea559085abe8f4a3eebbebd35695a"
-
     r = requests.get(url1)
     data = r.json()
-
     dataframe = {'network': ip, 'lat': data['lat'], 'lon': data['lon']}
-
-
     return dataframe
 
-
+@login_required(login_url='/login')
 def index(request):
-	try:
-		saveData()
-		pass
-	except Exception as e:
-		print(e)
+
 	dataIp = load()
+
+	if dataIp.empty:
+		return render(request, 'nopcap.html') #Hai que comprobar na vista que non se recive nada nos templates
+
 	dataGeo = pd.DataFrame()
 	network = []
 	lat = []
@@ -89,8 +68,6 @@ def index(request):
 		lon.append(str(dataGeo['lon'][b]))
 		b = b + 1
 
-
 	context = {'network': network, 'lat': lat, 'lon': lon}
 
-
-	return render(request, 'probaMaps.html', context)
+	return render(request, 'maps.html', context)
