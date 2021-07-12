@@ -146,6 +146,13 @@ def stats(request):
     return render(request, 'stats.html', {'chart1': chart_prots, 'chart2': chart_ip_src, 'chart3': chart_ip_dst})
 
 @login_required(login_url='/login')
+def graph(request):
+	pcap_data = PcapInfo.objects.all()
+	df = read_frame(pcap_data)
+	grafo = analyze_dataframe(df).show_graph()
+	return render(request, 'graph.html', {'chart1': grafo })
+	
+@login_required(login_url='/login')
 def pcaps(request):
     context = list_pcaps()
     print(context)

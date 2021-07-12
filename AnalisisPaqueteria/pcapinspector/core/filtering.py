@@ -1,5 +1,5 @@
 import base64
-
+import networkx as nx
 import pandas as pd
 import numpy as np
 import os
@@ -67,7 +67,54 @@ class analyze_dataframe():
                 self.df = self.df.drop(index)
                 continue
         return self.df
-
+    
+    def create_graph(self):
+	    G = nx.Graph()
+	    all_ips = self.df["ip_src"].dropna().unique()
+	    all_ips = list(dict.fromkeys(all_ips))
+	    ips_grp = self.df.groupby(["ip_src","ip_dst"])
+	    ips_protos = ips_grp["protocol"].unique()
+	    ips_protos_dst = ips_grp["ip_dst"].unique()
+	    for i in all_ips:
+	    	#solo almacenamos nodos de ips locales
+		    if(net().is_local_unicast(str(i))):
+		        G.add_node(str(i))
+		    else:
+		    	continue
+		    #Recorremos el dataframe y obtenemos el dst y protocolos
+		    for j in range(len(ips_protos[i])):
+		        proto_ip = ips_protos[i].iloc[j]
+		        dst_ip = ips_protos_dst[i].iloc[j][0]	
+		        #Comprobamos si la ip de destino es local
+		        if (net().is_local_net(dst_ip)):
+		        	if i != j:
+		        		G.add_edge(i,str(dst_ip),proto=proto_ip)
+		        #La ip de destino es externa
+		        G.add_node("Internet") #WAN
+		        G.add_edge(i,"Internet",proto=proto_ip) 
+		        #De internet al nodo externo objetivo
+		        tag = str(proto_ip) 
+		        G.add_edge("Internet",str(dst_ip),proto=tag)
+	    return G
+    def show_graph(self):
+        plt.figure(figsize=(12, 7))
+        G = self.create_graph()
+        pos = nx.spring_layout(G)
+        nx.draw_networkx(G,pos)
+        # labels
+        labels = nx.get_edge_attributes(G, 'proto')
+        nx.draw_networkx_edge_labels(G, pos, edge_labels=labels)
+        #save graph
+        buf = BytesIO()
+        plt.savefig(buf, format='png', bbox_inches='tight')
+        buf.seek(0)
+        data = buf.getvalue()
+        graph = base64.b64encode(data)
+        graph = graph.decode('utf-8')
+        buf.close()
+        plt.close()
+        return graph
+       
     def func(self, pct, allvals):
         absolute = int(round(pct / 100. * np.sum(allvals)))
         return "{:.1f}%\n({:d})".format(pct, absolute)
@@ -103,8 +150,49 @@ class analyze_dataframe():
         graph = base64.b64encode(data)
         graph = graph.decode('utf-8')
         buffer.close()
+        plt.close()
         return graph
 
+
+class net():
+	def return_ttl_so_name(self,ttl_number):
+		if ttl_number >= 0 and ttl_number <= 64:
+			return "Linux"
+		elif ttl_number >= 65 and ttl_number <=128:
+			return "Windows"
+		else:	
+			return "Uknown"	
+			
+	def is_multicast(self,ip):
+		octetos = ip.split(".")
+		if octetos[0] == "224" and octetos[1] == "0" and octetos[2] == "0":
+			return True
+		return False
+		
+	def is_broadcast(self,ip):
+		octetos = ip.split(".")
+		if octetos[0] == "192" and octetos[1] == "168" and octetos[3] == "255":
+			return True
+		elif octetos[0] == "255" and octetos[1] == "255" and octetos[2] == "255" and octetos[3] == "255":
+			return True
+		return False
+		
+	def is_local_unicast(self,ip):
+		octetos = ip.split(".")
+		if octetos[0] == "127":
+			return True
+		elif (octetos[0] =="192" and octetos[1] =="168"):
+			return True
+		elif octetos[0] == "10":
+			return True
+		elif octetos[0] == "172" and (int(octetos[1]) > 15 and int(octetos[1]) < 32):
+			return True
+		return False
+
+	def is_local_net(self,ip):
+		if (self.is_broadcast(ip) or self.is_multicast(ip) or self.is_local_unicast(ip)):
+			return True
+		return False
 
 # Registro
 class opts():
