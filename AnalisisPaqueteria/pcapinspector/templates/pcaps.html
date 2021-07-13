@@ -1,25 +1,32 @@
 {% extends "base.html" %}
 {% load staticfiles %}
 {%block content%}
-<script src="{% static "pcapinspector/js/filters.js" %}"></script>
-<script src="{% static "pcapinspector/js/pages.js" %}"></script>
 
-<div style = "margin:20px;padding-left:20px;">
+<div style = "margin:50px;padding-left:200px;">
+
+  {% if uploaded_file_url %}
+
+    <p>El pcap {{uploaded_file_url}} ha sido cargado</p>
+
+  {% else %}
 
     <h1>Pcap List</h1>
 
     {% if list_pcaps %}
-    <ul style="list-style-type:none;">
+      <ul>
 
-      {% for pcap in list_pcaps %}
-      <li>
-        {{pcap}}
-      </li>
-      {% endfor %}
+        {% for pcap in list_pcaps %}
+        <li>
+          <a href="{% url 'select' pcap %}">{{pcap}}</a>
+        </li>
+        {% endfor %}
 
-    </ul>
+
+
+    </nav>
     {% else %}
       <p>There is no pcap</p>
     {% endif %}
+  {% endif %}
 </div>
 {% endblock %}

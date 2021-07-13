@@ -161,3 +161,9 @@ def graph(request):
 def pcaps(request):
     context = list_pcaps()
     return render(request, 'pcaps.html', context)
+
+@login_required(login_url='/login')
+def select_pcap(request,filename):
+    requser = request.user
+    context = load_pcap('/media/'+filename, requser)
+    return render(request, 'pcaps.html', context)

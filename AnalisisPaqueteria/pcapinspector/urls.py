@@ -12,4 +12,5 @@ urlpatterns=[
 	url(r'^stats/', views.stats, name='stats'),
 	url(r'^graph/', views.graph, name='graph'),
 	url(r'^pcaps/',views.pcaps, name='pcaps'),
+	url(r'^(?P<filename>[\w.]{0,256})/$',views.select_pcap, name='select'),
 ]
