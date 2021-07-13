@@ -4,12 +4,12 @@ from django.core.files.storage import FileSystemStorage
 from .models import PcapInfo
 from django.urls import reverse
 import json
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 
 from .core.generate_csv import load_pcap_to_model
-from .core.filtering import load_filters_to_model, analyze_dataframe
+from .core.filtering import analyze_dataframe
 from .forms import FilterForm, LoginForm, SignupForm
 from django_pandas.io import read_frame
 import os.path
@@ -20,13 +20,15 @@ from os.path import isfile, join
 
 # Auxiliar
 
-def load_pcap(filename):
-    # Borramos los datos de la tabla resultados
-    PcapInfo.objects.all().delete()
+def load_pcap(filename,requser):
+    #scan = UserScan.objects.get_or_create(user=requser)
+    #Borramos las filas asociadas a la captura del user
+    PcapInfo.objects.filter(user=requser).delete() 
     # generamos y cargamos csv al modelo
-    load_pcap_to_model(filename)
+    load_pcap_to_model(filename,requser)
     # Visualizamos los datos
-    all_objects = PcapInfo.objects.all()
+    all_objects = PcapInfo.objects.filter(user=requser)
+    print(all_objects)
     context = {'uploaded_file_url': filename, 'all_packets': all_objects}
     return context
 
@@ -90,13 +92,13 @@ def index(request):
             login_error = "Se ha producido un error de login"
 
     form = FilterForm()
-    # Datos captura
-    pcap_data = PcapInfo.objects.all()
     login_form = LoginForm()
     signup_form = SignupForm()
-
+    # Datos captura
     if request.user.is_authenticated:
-        context = {'all_packets': pcap_data, 'form': form, 'login_form': login_form, 'signup_form ': signup_form,
+    	requser = request.user
+    	pcap_data = PcapInfo.objects.filter(user=requser)
+    	context = {'all_packets': pcap_data, 'form': form, 'login_form': login_form, 'signup_form ': signup_form,
                    'login_error': login_error}
     else:
         context = {'login_form': login_form, 'signup_form': signup_form, 'login_error': login_error}
@@ -120,14 +122,14 @@ def upload(request):
     login_form = LoginForm()
     signup_form = SignupForm()
 
-    if request.method == 'POST' and request.FILES['pcap']:
+    if request.method == 'POST' and (request.FILES['pcap'] and request.user.is_authenticated):
         pcap_file = request.FILES['pcap']
+        requser = request.user
         fs = FileSystemStorage()
         filename = fs.save(pcap_file.name, pcap_file)
         uploaded_file_url = fs.url(filename)
-        context = load_pcap(uploaded_file_url)
-        if request.user.is_authenticated:
-            return render(request, 'upload.html', context.update(
+        context = load_pcap(uploaded_file_url,requser)
+        return render(request, 'upload.html', context.update(
                 {'login_form': login_form, 'signup_form ': signup_form, 'login_error': login_error}))
 
     return render(request, 'upload.html',
@@ -136,7 +138,8 @@ def upload(request):
 
 @login_required(login_url='/login')
 def stats(request):
-    pcap_data = PcapInfo.objects.all()
+    requser = request.user
+    pcap_data = PcapInfo.objects.filter(user=requser)
     df = read_frame(pcap_data)
     # x = [x.protocol for x in pcap_data]
     chart_prots = analyze_dataframe(df).stats('protocol', 'Listado de protocolos', 'protocols')
@@ -147,13 +150,14 @@ def stats(request):
 
 @login_required(login_url='/login')
 def graph(request):
-	pcap_data = PcapInfo.objects.all()
-	df = read_frame(pcap_data)
-	grafo = analyze_dataframe(df).show_graph()
-	return render(request, 'graph.html', {'chart1': grafo })
+    if request.user.is_authenticated:
+    	requser = request.user
+    pcap_data = PcapInfo.objects.filter(user=requser)
+    df = read_frame(pcap_data)
+    grafo = analyze_dataframe(df).show_graph()
+    return render(request, 'graph.html', {'chart1': grafo })
 	
 @login_required(login_url='/login')
 def pcaps(request):
     context = list_pcaps()
-    print(context)
     return render(request, 'pcaps.html', context)

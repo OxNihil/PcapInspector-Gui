@@ -7,10 +7,10 @@ import datapackage
 from pcapinspector.models import PcapInfo
 from django.contrib.auth.decorators import login_required
 
-def load():
+def load(requser):
 	ip_result = []
 	ip_return = []
-	ip_info = PcapInfo.objects.all()
+	ip_info = PcapInfo.objects.filter(user=requser)
 
 	for ip in ip_info:
 		ip_result.append(ip.ip_src)
@@ -45,8 +45,8 @@ def ipgeo(ip):
 
 @login_required(login_url='/login')
 def index(request):
-
-	dataIp = load()
+	requser = request.user
+	dataIp = load(requser)
 
 	if dataIp.empty:
 		return render(request, 'nopcap.html') #Hai que comprobar na vista que non se recive nada nos templates

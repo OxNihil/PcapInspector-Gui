@@ -19,7 +19,7 @@ def gen_csv(pcap_file):
 
 
 # frame.number,frame.time,eth.src,eth.dst,ip.src,ip.dst,tcp.srcport,tcp.dstport,udp.srcport,udp.dstport,ip.ttl,_ws.col.Protocol,ip.len
-def load_csv_to_model(path):
+def load_csv_to_model(path,requser):
     with open(path) as f:
         reader = csv.reader(f)
         # Saltamos las cabeceras
@@ -47,15 +47,16 @@ def load_csv_to_model(path):
                     dst_port=dstport,
                     ttl=row[10],
                     protocol=row[11],
-                    ip_len=row[12]
+                    ip_len=row[12],
+                    user=requser
                 )
             except:
-                continue
+                continue           
 
 
-def load_pcap_to_model(pcap_file):
+def load_pcap_to_model(pcap_file,requser):
     csv_path = gen_csv(pcap_file)
-    load_csv_to_model(csv_path)
+    load_csv_to_model(csv_path,requser)
 
 
 def csv_to_dataframe(path):

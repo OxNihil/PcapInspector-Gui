@@ -3,9 +3,9 @@ import networkx as nx
 import pandas as pd
 import numpy as np
 import os
-from .generate_csv import dataframe_to_model, model_to_dataframe
 from pcapinspector.models import PcapInfo
 import matplotlib.pyplot as plt
+plt.switch_backend('agg')
 from matplotlib.lines import Line2D
 from django.conf import settings
 from io import StringIO, BytesIO
@@ -65,18 +65,6 @@ class analyze_dataframe():
     	for i in ttls:
     		so[i] = net().return_ttl_so_name(ttls[i])
     	return so
-    def filter_dataframe(self, opts):
-        filtro = filters(opts)
-        # Iteramos sobre las filas del dataframe
-        # Eliminamos las que esten para filtrar
-        for index, row in self.df.iterrows():
-            if (filtro.port(row)):
-                self.df = self.df.drop(index)
-                continue
-            if (filtro.protocol(row)):
-                self.df = self.df.drop(index)
-                continue
-        return self.df
     
     def create_graph(self):
 	    G = nx.Graph()
@@ -170,8 +158,6 @@ class analyze_dataframe():
         return graph
 
 
-
-
 # Registro
 class opts():
     def __init__(self, port, proto):
@@ -208,9 +194,3 @@ def get_graph_color_map(df,G):
 		check = True
 	return color_map
 
-def load_filters_to_model(protocol, port):
-    opt = opts(protocol, port)
-    df = model_to_dataframe(PcapInfo)
-    analyze_df = analyze_dataframe(df)
-    df = analyze_df.filter_dataframe(opt)
-    modelo = dataframe_to_model(df, PcapInfo)
