@@ -151,10 +151,8 @@ def pcaps(request):
 
 @login_required(login_url='/login')
 def opcion_nova(request,filename):
-    path_file = settings.MEDIA_ROOT + "/" + filename
-    print(path_file)
     context = load_pcap('/media/'+filename)
-    print(PcapInfo.objects.all())
+    
     return render(request, 'pcaps.html', context)
 
 

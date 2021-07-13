@@ -55,6 +55,7 @@ def load_csv_to_model(path):
 
 def load_pcap_to_model(pcap_file):
     csv_path = gen_csv(pcap_file)
+    print("pasa algo " + csv_path)
     load_csv_to_model(csv_path)
 
 
