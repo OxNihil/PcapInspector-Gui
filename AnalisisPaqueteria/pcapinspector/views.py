@@ -63,15 +63,12 @@ def logout_view(request):
 
 def list_pcaps():      
     context = {
-        'list_pcaps':[],
-        'path_pcaps':[]
+        'list_pcaps':[]
     }
     # List of files in your MEDIA_ROOT
     media_path = settings.MEDIA_ROOT
     myfiles = [f for f in listdir(media_path) if isfile(join(media_path, f))]
     context['list_pcaps'] = myfiles
-    for f in myfiles:
-        context['path_pcaps'].append(settings.MEDIA_ROOT + "/" + f)
 
     return context
 
@@ -94,6 +91,8 @@ def index(request):
     pcap_data = PcapInfo.objects.all()
     login_form = LoginForm()
     signup_form = SignupForm()
+
+    print("hola2")
 
     if request.user.is_authenticated:
         context = {'all_packets': pcap_data, 'form': form, 'login_form': login_form, 'signup_form ': signup_form,
@@ -148,5 +147,14 @@ def stats(request):
 @login_required(login_url='/login')
 def pcaps(request):
     context = list_pcaps()
-    print(context)
     return render(request, 'pcaps.html', context)
+
+@login_required(login_url='/login')
+def opcion_nova(request,filename):
+    path_file = settings.MEDIA_ROOT + "/" + filename
+    print(path_file)
+    context = load_pcap('/media/'+filename)
+    print(PcapInfo.objects.all())
+    return render(request, 'pcaps.html', context)
+
+

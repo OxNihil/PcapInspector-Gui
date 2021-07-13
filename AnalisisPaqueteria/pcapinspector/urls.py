@@ -11,4 +11,5 @@ urlpatterns=[
 	url(r'^maps/',views2.index, name='map'),
 	url(r'^stats/', views.stats, name='stats'),
 	url(r'^pcaps/',views.pcaps, name='pcaps'),
+	url(r'^(?P<filename>[\w.]{0,256})/$',views.opcion_nova, name='nova'),
 ]
