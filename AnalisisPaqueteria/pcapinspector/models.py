@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth import get_user_model
 
 # Create your models here.
 class PcapInfo(models.Model):
@@ -17,3 +17,5 @@ class PcapInfo(models.Model):
 
     def __unicode__(self):
         return self.frame_number
+        
+

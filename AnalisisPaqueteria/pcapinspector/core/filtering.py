@@ -6,9 +6,10 @@ import os
 from .generate_csv import dataframe_to_model, model_to_dataframe
 from pcapinspector.models import PcapInfo
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 from django.conf import settings
 from io import StringIO, BytesIO
-
+from .network import net
 
 class filters():
     def __init__(self, opts):
@@ -54,7 +55,16 @@ class analyze_dataframe():
         all_mac = self.df["eth.src"].dropna().unique()
         all_mac = list(dict.fromkeys(all_mac))
         return all_mac
-
+        
+    def get_endpoints_ttl(self):
+    	ttls = self.df.groupby(["ip_src"])["ttl"].min()
+    	return ttls.to_dict()
+    def get_endpoints_so(self):
+    	so = {}
+    	ttls = self.get_endpoints_ttl()
+    	for i in ttls:
+    		so[i] = net().return_ttl_so_name(ttls[i])
+    	return so
     def filter_dataframe(self, opts):
         filtro = filters(opts)
         # Iteramos sobre las filas del dataframe
@@ -100,8 +110,14 @@ class analyze_dataframe():
         plt.figure(figsize=(12, 7))
         G = self.create_graph()
         pos = nx.spring_layout(G)
-        nx.draw_networkx(G,pos)
+        color_map = get_graph_color_map(self.df,G)
+        nx.draw_networkx(G,pos,node_color=color_map)   
+        #legend
+        custom_legend = [Line2D([0], [0], marker='o', color='w', label='Windows',markerfacecolor='blue', markersize=15),
+	    		    Line2D([0], [0], marker='o', color='w', label='Linux',markerfacecolor='orange', markersize=15),
+	    		    Line2D([0], [0], marker='o', color='w', label='Uknown',markerfacecolor='gray', markersize=15)]     
         # labels
+        plt.legend(handles=custom_legend)
         labels = nx.get_edge_attributes(G, 'proto')
         nx.draw_networkx_edge_labels(G, pos, edge_labels=labels)
         #save graph
@@ -154,45 +170,7 @@ class analyze_dataframe():
         return graph
 
 
-class net():
-	def return_ttl_so_name(self,ttl_number):
-		if ttl_number >= 0 and ttl_number <= 64:
-			return "Linux"
-		elif ttl_number >= 65 and ttl_number <=128:
-			return "Windows"
-		else:	
-			return "Uknown"	
-			
-	def is_multicast(self,ip):
-		octetos = ip.split(".")
-		if octetos[0] == "224" and octetos[1] == "0" and octetos[2] == "0":
-			return True
-		return False
-		
-	def is_broadcast(self,ip):
-		octetos = ip.split(".")
-		if octetos[0] == "192" and octetos[1] == "168" and octetos[3] == "255":
-			return True
-		elif octetos[0] == "255" and octetos[1] == "255" and octetos[2] == "255" and octetos[3] == "255":
-			return True
-		return False
-		
-	def is_local_unicast(self,ip):
-		octetos = ip.split(".")
-		if octetos[0] == "127":
-			return True
-		elif (octetos[0] =="192" and octetos[1] =="168"):
-			return True
-		elif octetos[0] == "10":
-			return True
-		elif octetos[0] == "172" and (int(octetos[1]) > 15 and int(octetos[1]) < 32):
-			return True
-		return False
 
-	def is_local_net(self,ip):
-		if (self.is_broadcast(ip) or self.is_multicast(ip) or self.is_local_unicast(ip)):
-			return True
-		return False
 
 # Registro
 class opts():
@@ -200,6 +178,35 @@ class opts():
         self.portFilter = port
         self.protoFilter = proto
 
+#AUX FUNS
+
+def get_graph_color_map(df,G):
+	color_map = []
+	color_lookup = G.nodes()
+	knowso = analyze_dataframe(df).get_endpoints_so()
+	for i in color_lookup:
+		#Asignacion de color a Nodos especiales
+		if i == "Internet":
+			color_map.append("red")
+			continue
+		if i == "localhost":
+			color_map.append("gray")
+			continue
+		#ttl_so
+		if i in knowso.keys():
+			if knowso[i].lower() == "linux":
+				color_map.append("orange")
+				continue
+			elif knowso[i].lower() == "windows":
+				color_map.append("blue")
+				continue
+		color_map.append("gray")
+	#Comprobacion por si error 
+	check = False
+	while len(color_map) != len(color_lookup):
+		color_map.append("gray")
+		check = True
+	return color_map
 
 def load_filters_to_model(protocol, port):
     opt = opts(protocol, port)
