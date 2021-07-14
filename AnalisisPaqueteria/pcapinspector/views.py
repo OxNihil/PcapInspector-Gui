@@ -20,12 +20,12 @@ from os.path import isfile, join
 
 # Auxiliar
 
-def load_pcap(filename,requser):
-    #scan = UserScan.objects.get_or_create(user=requser)
-    #Borramos las filas asociadas a la captura del user
-    PcapInfo.objects.filter(user=requser).delete() 
+def load_pcap(filename, requser):
+    # scan = UserScan.objects.get_or_create(user=requser)
+    # Borramos las filas asociadas a la captura del user
+    PcapInfo.objects.filter(user=requser).delete()
     # generamos y cargamos csv al modelo
-    load_pcap_to_model(filename,requser)
+    load_pcap_to_model(filename, requser)
     # Visualizamos los datos
     all_objects = PcapInfo.objects.filter(user=requser)
     print(all_objects)
@@ -63,10 +63,11 @@ def logout_view(request):
     logout(request)
     return redirect(request.GET['next'])
 
-def list_pcaps():      
+
+def list_pcaps():
     context = {
-        'list_pcaps':[],
-        'path_pcaps':[]
+        'list_pcaps': [],
+        'path_pcaps': []
     }
     # List of files in your MEDIA_ROOT
     media_path = settings.MEDIA_ROOT
@@ -96,9 +97,9 @@ def index(request):
     signup_form = SignupForm()
     # Datos captura
     if request.user.is_authenticated:
-    	requser = request.user
-    	pcap_data = PcapInfo.objects.filter(user=requser)
-    	context = {'all_packets': pcap_data, 'form': form, 'login_form': login_form, 'signup_form ': signup_form,
+        requser = request.user
+        pcap_data = PcapInfo.objects.filter(user=requser)
+        context = {'all_packets': pcap_data, 'form': form, 'login_form': login_form, 'signup_form ': signup_form,
                    'login_error': login_error}
     else:
         context = {'login_form': login_form, 'signup_form': signup_form, 'login_error': login_error}
@@ -128,9 +129,9 @@ def upload(request):
         fs = FileSystemStorage()
         filename = fs.save(pcap_file.name, pcap_file)
         uploaded_file_url = fs.url(filename)
-        context = load_pcap(uploaded_file_url,requser)
+        context = load_pcap(uploaded_file_url, requser)
         return render(request, 'upload.html', context.update(
-                {'login_form': login_form, 'signup_form ': signup_form, 'login_error': login_error}))
+            {'login_form': login_form, 'signup_form ': signup_form, 'login_error': login_error}))
 
     return render(request, 'upload.html',
                   {'login_form': login_form, 'signup_form ': signup_form, 'login_error': login_error})
@@ -142,28 +143,36 @@ def stats(request):
     pcap_data = PcapInfo.objects.filter(user=requser)
     df = read_frame(pcap_data)
     # x = [x.protocol for x in pcap_data]
-    chart_prots = analyze_dataframe(df).stats('protocol', 'Listado de protocolos', 'protocols')
-    chart_ip_src = analyze_dataframe(df).stats('ip_src', 'Direcciones IPs de origen', 'IPs')
-    chart_ip_dst = analyze_dataframe(df).stats('ip_dst', 'Direcciones IPs de destino', 'IPs')
+    chart_l_ip_src = analyze_dataframe(df).lollypop('ip_src', 'Ocurrencias de Dir. IP de origen',
+                                                    'Número de Ocurrencias')
+    chart_l_ip_dst = analyze_dataframe(df).lollypop('ip_dst', 'Ocurrencias de Dir. IP de destino',
+                                                    'Número de Ocurrencias')
+    chart_prots = analyze_dataframe(df).pie_chart('protocol', 'Listado de protocolos', 'protocols')
+    chart_p_src_port = analyze_dataframe(df).pie_chart('src_port', 'Puertos más usados en origen', 'Ports')
+    chart_p_dst_port = analyze_dataframe(df).pie_chart('dst_port', 'Puertos más usados en destino', 'Ports')
+    return render(request, 'stats.html',
+                  {'chart1': chart_l_ip_src, 'chart2': chart_l_ip_dst, 'chart3': chart_p_src_port,
+                   'chart4': chart_p_dst_port})
 
-    return render(request, 'stats.html', {'chart1': chart_prots, 'chart2': chart_ip_src, 'chart3': chart_ip_dst})
 
 @login_required(login_url='/login')
 def graph(request):
     if request.user.is_authenticated:
-    	requser = request.user
+        requser = request.user
     pcap_data = PcapInfo.objects.filter(user=requser)
     df = read_frame(pcap_data)
     grafo = analyze_dataframe(df).show_graph()
-    return render(request, 'graph.html', {'chart1': grafo })
-	
+    return render(request, 'graph.html', {'chart1': grafo})
+
+
 @login_required(login_url='/login')
 def pcaps(request):
     context = list_pcaps()
     return render(request, 'pcaps.html', context)
 
+
 @login_required(login_url='/login')
-def select_pcap(request,filename):
+def select_pcap(request, filename):
     requser = request.user
-    context = load_pcap('/media/'+filename, requser)
+    context = load_pcap('/media/' + filename, requser)
     return render(request, 'pcaps.html', context)
