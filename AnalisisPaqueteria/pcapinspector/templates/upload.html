@@ -9,8 +9,8 @@
 
   <form method="post" enctype="multipart/form-data" id="upload">
     {% csrf_token %}
-    <input type="file" name="pcap">
-    <button type="submit" onclick="move()">Upload</button>
+    <input type="file" name="pcap" class="btn" style="float:left;">
+    <button type="submit" class="btn" style="float:left;background-color:#3E5BED;color:white;" onclick="move()">Upload</button>
   </form>
   {% if uploaded_file_url %}
     <p>File uploaded at: <a href="{{ uploaded_file_url }}">{{ uploaded_file_url }}</a></p>

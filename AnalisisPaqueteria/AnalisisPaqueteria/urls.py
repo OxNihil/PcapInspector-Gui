@@ -22,6 +22,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^maps/', include('maps.urls')),
     url(r'^', include('pcapinspector.urls')),
-    url(r'^logout/$', views.logout_view, name='logout_view'),
+    url(r'^log-out/$', views.logout_view, name='logout_view'),
     url(r'^signup/$', views.logout_view, name='signup_view'),
 ]

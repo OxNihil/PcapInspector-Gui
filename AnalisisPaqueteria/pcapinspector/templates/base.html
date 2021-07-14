@@ -9,21 +9,38 @@
     <title>PcapInspector</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="{% static 'pcapinspector/css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'pcapinspector/css/bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'pcapinspector/css/bootstrap-theme.css' %}" rel="stylesheet">
     <script src="{% static 'pcapinspector/js/jquery-3.6.0.js' %}"></script>
     <script type="text/javascript" src="{% static "pcapinspector/js/navbar.js" %}"></script>
   </head>
   <body>
   	<header>
-        {% if user.is_authenticated %}
-  		<h1>PcapInspector - {{request.user.username}}</h1>
-        {% else %}
-        <h1>PcapInspector</h1>
-        {% endif %}
-  	</header>
-  	<nav class="sidebar-navigation">
+		<div class="menu-btn" onclick="menufun(this)">
+			<div class="bar1"></div>
+  			<div class="bar2"></div>
+  			<div class="bar3"></div>
+		</div>
+		<div class="logo"><h1>PcapInspector</h1></div>
+		<div class="session">
+        	{% if user.is_authenticated %}
+  			<h4>{{request.user.username}}</h4>
+        	{% endif %}
+		</div>  	
+	</header>
+	<script>
+	function menufun(x) {
+	  x.classList.toggle("change");
+	  menu = document.getElementById("sidebar");
+	  menu.classList.toggle("change-menu");
+	  content = document.getElementById("page-content");
+	  content.classList.toggle("change-content");
+	}
+	</script>
+  	<nav class="sidebar-navigation" id="sidebar">
 		<ul>
-			<li class="active"><span data-url="{% url 'index' %}">Home</span></li>
-			<li><span data-url="{% url 'pcaps' %}">PcapList</span></li>
+			<li class="active nav-item"><span data-url="{% url 'index' %}">Home</span></li>
+			<li class="nav-item"><span data-url="{% url 'pcaps' %}">PcapList</span></li>
 			<li><span data-url="{% url 'upload' %}">Upload</span></li>
 			<li><span data-url="{% url 'map' %}">Map</span></li>
 			<li><span data-url="{% url 'graph' %}">Graph</span></li>
@@ -36,7 +53,9 @@
             {% endif %}
 		</ul>
 	</nav>
-  	{% block content %}
-    {% endblock %}
+	<div class="page-content" id="page-content">
+  		{% block content %}
+   		{% endblock %}
+	</div>
   </body>
 </html>
