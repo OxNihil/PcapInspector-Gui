@@ -3,30 +3,83 @@
 {%block content%}
 
 <div style="margin:20px;padding-top:10px;">
+<!--
+  <h1>Pcap List Exaxmples</h1>
 
-  {% if uploaded_file_url %}
+  {% if list_pcaps_example %}
+    <ul style="list-style-type: none; display: inline-block;">
 
-    <p>El pcap {{uploaded_file_url}} ha sido cargado</p>
+      {% for pcap_example in list_pcaps_example %}
+      <li>
+        <a href="{% url 'select' pcap_example %}">{{pcap_example}}</a>
+      </li>
+      {% endfor %}
 
+
+
+    </ul>
   {% else %}
-
-    <h1>Pcap List</h1>
-
-    {% if list_pcaps %}
-      <ul>
-
-        {% for pcap in list_pcaps %}
-        <li>
-          <a href="{% url 'select' pcap %}">{{pcap}}</a>
-        </li>
-        {% endfor %}
-
-
-
-    </nav>
-    {% else %}
-      <p>There is no pcap</p>
-    {% endif %}
+    <p>There is no pcap</p>
   {% endif %}
+
+
+
+  <h1>Pcap List User</h1>
+
+  {% if list_pcaps_user %}
+    <ul style="list-style-type: none; display: inline-block;">
+
+      {% for pcap_user in list_pcaps_user %}
+      <li>
+        <a href="{% url 'select' pcap_user %}">{{pcap_user}}</a>
+      </li>
+      {% endfor %}
+
+
+
+  </ul>
+  {% else %}
+    <p>There is no pcap</p>
+  {% endif %}-->
+
+  <div class="row">
+    <div class="column">
+        <h2>Pcap List Exaxmples</h2>
+        {% if list_pcaps_example %}
+          <ul style="list-style-type: none; display: inline-block;">
+
+            {% for pcap_example in list_pcaps_example %}
+            <li>
+              <a href="{% url 'select' pcap_example %}">{{pcap_example}}</a>
+            </li>
+            {% endfor %}
+
+
+
+          </ul>
+        {% else %}
+          <p>There is no pcap</p>
+        {% endif %}
+
+    </div>
+    <div class="column">
+        <h2>Pcap List User</h2>
+        {% if list_pcaps_user %}
+          <ul style="list-style-type: none; display: inline-block;">
+
+            {% for pcap_user in list_pcaps_user %}
+            <li>
+              <a href="{% url 'select' pcap_user %}">{{pcap_user}}</a>
+            </li>
+            {% endfor %}
+
+
+
+          </ul>
+        {% else %}
+          <p>There is no pcap</p>
+        {% endif %}
+
+    </div>
 </div>
 {% endblock %}

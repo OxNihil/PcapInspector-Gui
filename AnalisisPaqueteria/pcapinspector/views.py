@@ -66,17 +66,28 @@ def logout_view(request):
     return redirect(request.GET['next'])
 
 #necesito pasarlle o usuario
-def list_pcaps():
+def list_pcaps(user):
     context = {
-        'list_pcaps': [],
-        'path_pcaps': []
+        'list_pcaps_example': [],
+        'path_pcaps_example': [],
+        'list_pcaps_user': [],
+        'path_pcaps_user': [],
+
     }
-    # List of files in your MEDIA_ROOT
-    media_path = settings.MEDIA_ROOT
+    # List of files in your MEDIA_ROOT/example
+    media_path = settings.MEDIA_ROOT + '/example'
     myfiles = [f for f in listdir(media_path) if isfile(join(media_path, f))]
-    context['list_pcaps'] = myfiles
+    context['list_pcaps_example'] = myfiles
     for f in myfiles:
-        context['path_pcaps'].append(settings.MEDIA_ROOT + "/" + f)
+        context['path_pcaps_example'].append(settings.MEDIA_ROOT + "/example" + f)
+
+    # List of files in your MEDIA_ROOT/user
+    if user in listdir(settings.MEDIA_ROOT):
+        media_path = settings.MEDIA_ROOT + '/' + user 
+        myfiles = [f for f in listdir(media_path) if isfile(join(media_path, f))]
+        context['list_pcaps_user'] = myfiles
+        for f in myfiles:
+            context['path_pcaps_user'].append(settings.MEDIA_ROOT + "/" + user + '/' +f)
 
     return context
 
@@ -126,11 +137,23 @@ def upload(request):
     signup_form = SignupForm()
 
     if request.method == 'POST' and (request.FILES['pcap'] and request.user.is_authenticated):
+        media_path = settings.MEDIA_ROOT
+        dir_exist = False
+        for f in listdir(media_path): 
+            something = join(media_path, f)
+            if isdir(something) and (str(f) == str(request.user)):
+                dir_exist = True
+                break
+        if dir_exist == False:
+            os.mkdir(os.path.join(settings.MEDIA_ROOT, str(request.user)))
         pcap_file = request.FILES['pcap']
         requser = request.user
-        fs = FileSystemStorage()
+        user_path = media_path + '/' + str(requser)
+        print('User path '+ user_path)
+        fs = FileSystemStorage(user_path)
         filename = fs.save(pcap_file.name, pcap_file)
         uploaded_file_url = fs.url(filename)
+        print("Proba " + uploaded_file_url)
         context = load_pcap(uploaded_file_url, requser)
         return render(request, 'upload.html', context.update(
             {'login_form': login_form, 'signup_form ': signup_form, 'login_error': login_error}))
@@ -169,14 +192,20 @@ def graph(request):
 
 @login_required(login_url='/login')
 def pcaps(request):
-    context = list_pcaps()
+    context = list_pcaps(str(request.user))
     return render(request, 'pcaps.html', context)
 
 
 @login_required(login_url='/login')
 def select_pcap(request, filename):
+    #necesito saber de que carpeta teño que coller as cousas
     requser = request.user
-    context = load_pcap('/media/' + filename, requser)
-    #context = load_pcap('/media/' + requser + '/' + filename, requser)
+    #context = load_pcap('/media/' + filename, requser)
+    #solución bruta
+    for f in listdir(settings.MEDIA_ROOT + '/example'):
+        if f == filename:
+            context = load_pcap('/media/example/' + filename, requser)
+            return index(request)
+    context = load_pcap('/media/' + str(requser) + '/' + filename, requser)
     #return render(request, 'pcaps.html', context)
     return index(request)
