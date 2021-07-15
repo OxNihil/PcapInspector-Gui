@@ -15,7 +15,7 @@ from django_pandas.io import read_frame
 import os.path
 from django.conf import settings
 from os import listdir, path
-from os.path import isfile, join
+from os.path import isfile, join, isdir
 
 
 # Auxiliar
