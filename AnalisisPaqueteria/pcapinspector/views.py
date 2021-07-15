@@ -28,7 +28,6 @@ def load_pcap(filename, requser):
     load_pcap_to_model(filename, requser)
     # Visualizamos los datos
     all_objects = PcapInfo.objects.filter(user=requser)
-    print(all_objects)
     context = {'uploaded_file_url': filename, 'all_packets': all_objects}
     return context
 
@@ -42,6 +41,9 @@ def register_view(request):
         else:
             f = UserCreationForm()
     form = SignupForm()
+    #cada vez que se cree un usuario creamo a carpeta en media
+    #dirname = logname
+    #os.mkdir(os.path.join('/media', dirname))
     return render(request, 'register.html', {'form': form})
 
 
@@ -63,7 +65,7 @@ def logout_view(request):
     logout(request)
     return redirect(request.GET['next'])
 
-
+#necesito pasarlle o usuario
 def list_pcaps():
     context = {
         'list_pcaps': [],
@@ -175,4 +177,6 @@ def pcaps(request):
 def select_pcap(request, filename):
     requser = request.user
     context = load_pcap('/media/' + filename, requser)
-    return render(request, 'pcaps.html', context)
+    #context = load_pcap('/media/' + requser + '/' + filename, requser)
+    #return render(request, 'pcaps.html', context)
+    return index(request)

@@ -6,6 +6,7 @@ import requests
 import datapackage
 from pcapinspector.models import PcapInfo
 from django.contrib.auth.decorators import login_required
+from pcapinspector.core.network import *
 
 def load(requser):
 	ip_result = []
@@ -23,11 +24,26 @@ def load(requser):
 		public = ip.split('.')
 		num1 = int(public[0])
 		num2 = int(public[1])
-		if ((num1 == 10) | (num1 == 172 & num2 >=16 & num2 <= 31) 
-			| (num1 == 192 & num2 == 168)) :
+		num3 = int(public[2])
+		num4 = int(public[3])
+		if ((num1 == 10) | (num1 == 172 and num2 >=16 and num2 <= 31) 
+			| (num1 == 192 and num2 == 168)) :
 			continue
-		else:
-			ip_return.append(ip)
+		if num1 == "224" and num2 == "0" and num3 == "0":
+			return True
+		if num1 == "192" and num2 == "168" and num4 == "255":
+			continue
+		if num1 == "255" and num2 == "255" and num3 == "255" and num4 == "255":
+			continue
+		if num1 == "127":
+			continue
+		if (num1 =="192" and num2 =="168"):
+			continue
+		if num1 == "10":
+			continue
+		if num1 == "172" and (int(num2) > 15 and int(num3) < 32):
+			continue
+		ip_return.append(ip)
 
 	ip_list = pd.DataFrame({'network': ip_return})
 
