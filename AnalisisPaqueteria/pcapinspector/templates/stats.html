@@ -2,10 +2,11 @@
 
 {% block content %}
 
- <img src="data:image/png;base64, {{ chart1|safe }}">
- <img src="data:image2/png;base64, {{ chart2|safe }}">
- <img src="data:image3/png;base64, {{ chart3|safe }}">
- <img src="data:image4/png;base64, {{ chart4|safe }}">
+ <img src="data:image_h_protocols_payload/png;base64, {{ chart0|safe }}">
+ <img src="data:image_l_ip_src/png;base64, {{ chart1|safe }}">
+ <img src="data:image_l_ip_dst/png;base64, {{ chart2|safe }}">
+ <img src="data:image_p_src_port/png;base64, {{ chart3|safe }}">
+ <img src="data:image_p_dst_port/png;base64, {{ chart4|safe }}">
 
 
 {% endblock %}

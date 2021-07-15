@@ -166,10 +166,10 @@ class analyze_dataframe():
         # Plot and retrieve the axes
         df = self.df[['protocol', 'ip_len']]
         df = df.groupby(['protocol', 'ip_len']).count().reset_index()
-        axes = df.hist(figsize=(12, 6), sharex=True, sharey=True)
+        axes = df.hist(by='protocol', figsize=(12, 6))
 
-        # Define a different color for the first three bars
-        colors = ["#e74c3c", "#2ecc71", "#3498db"]
+        # Define a different color for the first five bars
+        colors = ["#00d8ff", "#00b2ff", "#0090ff", "#0f87e4", "#177ecd"]
 
         for i, ax in enumerate(axes.reshape(-1)):
             # Define a counter to ensure that if we have more than three bars with a value,

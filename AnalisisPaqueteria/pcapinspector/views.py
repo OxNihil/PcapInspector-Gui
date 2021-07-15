@@ -149,11 +149,11 @@ def stats(request):
                                                     'Número de Ocurrencias')
     chart_l_ip_dst = analyze_dataframe(df).lollypop('ip_dst', 'Ocurrencias de Dir. IP de destino',
                                                     'Número de Ocurrencias')
-    chart_prots = analyze_dataframe(df).pie_chart('protocol', 'Listado de protocolos', 'protocols')
+    chart_protocols = analyze_dataframe(df).hist()
     chart_p_src_port = analyze_dataframe(df).pie_chart('src_port', 'Puertos más usados en origen', 'Ports')
     chart_p_dst_port = analyze_dataframe(df).pie_chart('dst_port', 'Puertos más usados en destino', 'Ports')
     return render(request, 'stats.html',
-                  {'chart1': chart_l_ip_src, 'chart2': chart_l_ip_dst, 'chart3': chart_p_src_port,
+                  {'chart0': chart_protocols, 'chart1': chart_l_ip_src, 'chart2': chart_l_ip_dst, 'chart3': chart_p_src_port,
                    'chart4': chart_p_dst_port})
 
 
