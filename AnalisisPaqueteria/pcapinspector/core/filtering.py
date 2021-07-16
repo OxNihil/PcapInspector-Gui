@@ -13,50 +13,37 @@ from io import StringIO, BytesIO
 from .network import net
 
 
-class filters():
-    def __init__(self, opts):
-        self.ports = opts.portFilter
-        self.protocols = opts.protoFilter
-
-    def protocol(self, row):
-        if self.protocols != "":
-            protocols_f = self.protocols.split(",")
-            protocols_f = [x.upper() for x in protocols_f]
-            proto = row["protocol"]
-            if proto not in protocols_f:
-                return True
-            return False
-        else:
-            return False
-
-    def port(self, row):
-        if self.ports != "":
-            ports_src = row["src_port"]
-            ports_dst = row["dst_port"]
-            if (np.isnan(ports_src) or np.isnan(ports_dst)):
-                return False
-            ports_f = self.ports.split(",")
-            ports_f = [int(x) for x in ports_f]
-            if (ports_f.count(ports_src) > 0 or ports_f.count(ports_dst) > 0):
-                return True
-            return False
-        else:
-            return False
-
-
 class analyze_dataframe():
     def __init__(self, df):
         self.df = df
-
     def get_endpoints_ip(self):
         all_ips = self.df["ip_src"].dropna().unique()
         all_ips = list(dict.fromkeys(all_ips))
         return all_ips
-
+    def get_endpoints_ip_dst(self):
+        all_ips = self.df["ip_dst"].dropna().unique()
+        all_ips = list(dict.fromkeys(all_ips))
+        return all_ips
+    def get_endpoints_proto(self):
+    	all_proto = self.df["protocol"].dropna().unique()
+    	all_proto = list(dict.fromkeys(all_proto))
+    	return all_proto
     def get_endpoints_mac(self):
-        all_mac = self.df["eth.src"].dropna().unique()
+        all_mac = self.df["eth_src"].dropna().unique()
         all_mac = list(dict.fromkeys(all_mac))
         return all_mac
+    def get_endpoints_mac_dst(self):
+        all_mac = self.df["eth_dst"].dropna().unique()
+        all_mac = list(dict.fromkeys(all_mac))
+        return all_mac
+    def get_endpoints_port(self):
+        all_port = self.df[self.df['src_port'] <= 49152]["src_port"].dropna().unique()
+        all_port = list(dict.fromkeys(all_port))
+        return all_port
+    def get_endpoints_port_dst(self):
+        all_port = self.df[self.df['dst_port'] <= 49152]["dst_port"].dropna().unique()
+        all_port = list(dict.fromkeys(all_port))
+        return all_port
 
     def get_endpoints_ttl(self):
         ttls = self.df.groupby(["ip_src"])["ttl"].min()
@@ -234,13 +221,6 @@ class analyze_dataframe():
         buffer.close()
         plt.close()
         return graph
-
-
-# Registro
-class opts():
-    def __init__(self, port, proto):
-        self.portFilter = port
-        self.protoFilter = proto
 
 
 # AUX FUNS

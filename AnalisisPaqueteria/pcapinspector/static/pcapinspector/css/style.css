@@ -89,15 +89,16 @@
 /* packet-list */
 #packet-table{
 	float:left;
-	width:75%;
+	width:100%;
+	clear:none;
+}
+#packet-table_wrapper{
+	clear:none;
+	width:85%;
+	float:left;
 }
 
 #upload{padding:10px;margin-left:100px;}
-
-#id_mac {width:100%;}
-#id_macdst {width:100%;}
-#id_ip {width:100%;}
-#id_ipdst {width:100%;}
 
 .filter-button{width:100%;color:white;background-color:#313443;transition:all 0.6 ease;}
 .filter-button:hover {background-color:white;}
@@ -114,8 +115,6 @@
   color: white;
 }
 
-#pages {float:left;margin:20px;}
-.paginas {background-color:black;color:white;float:left;margin:5px;padding:4px;cursor:pointer;}
 
 /* boton filtrado*/
 .menu-filtrado {display:none;overflow:hidden;}
@@ -124,7 +123,7 @@
 .loggin {display:none;}
 .loggin.active {display:block;}
 
-.filter-container{width:15%;float:left;}
+.filter-container{width:15%;float:right;}
 .filter-container div {clear:both;}
 /*Lista de elementos pa filtrar*/
 .filter { width:90%; height:auto;transition:all 0.5 ease;margin: 10px;padding:0;float:left;background-color:white;border:1px solid black;box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);}
@@ -151,7 +150,7 @@ header {
 .page-content{
   width: calc(100% - 12rem);
   margin-left: 12rem;
-  margin-top: 5rem;
+  margin-top: 4.8rem;
   transition: all 0.4s;
 }
 

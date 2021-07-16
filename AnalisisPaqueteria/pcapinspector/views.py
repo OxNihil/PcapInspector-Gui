@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 
 from .core.generate_csv import load_pcap_to_model
 from .core.filtering import analyze_dataframe
-from .forms import FilterForm, LoginForm, SignupForm
+from .forms import LoginForm, SignupForm
 from django_pandas.io import read_frame
 import os.path
 from django.conf import settings
@@ -105,20 +105,27 @@ def index(request):
         else:
             login_error = "Se ha producido un error de login"
 
-    form = FilterForm()
     login_form = LoginForm()
     signup_form = SignupForm()
     # Datos captura
     if request.user.is_authenticated:
         requser = request.user
         pcap_data = PcapInfo.objects.filter(user=requser)
-        context = {'all_packets': pcap_data, 'form': form, 'login_form': login_form, 'signup_form ': signup_form,
-                   'login_error': login_error}
+        df = read_frame(pcap_data)
+        ipsrc = analyze_dataframe(df).get_endpoints_ip()
+        ipdst = analyze_dataframe(df).get_endpoints_ip_dst()
+        protos = analyze_dataframe(df).get_endpoints_proto()
+        macsrc = analyze_dataframe(df).get_endpoints_mac()
+        macdst = analyze_dataframe(df).get_endpoints_mac_dst()
+        portsrc = analyze_dataframe(df).get_endpoints_port()
+        portdst = analyze_dataframe(df).get_endpoints_port_dst()
+        context = {'all_packets': pcap_data, 'login_form': login_form, 'signup_form ': signup_form,
+                   'login_error': login_error, 'ipsrc':ipsrc, 'ipdst':ipdst, 'protos':protos, 'portsrc':portsrc, 
+                   'portdst':portdst, 'macsrc':macsrc, 'macdst':macdst}
     else:
         context = {'login_form': login_form, 'signup_form': signup_form, 'login_error': login_error}
 
     return render(request, 'index.html', context)
-
 
 @login_required(login_url='/login')
 def upload(request):

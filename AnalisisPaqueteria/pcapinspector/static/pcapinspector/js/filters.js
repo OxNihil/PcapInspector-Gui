@@ -1,111 +1,47 @@
+function filterdatatable(that,n) {
+    var txtfilter = $(that).text().toUpperCase().replace(/\s/g,"-");
+    var table = $('#packet-table').DataTable();
+    if (txtfilter == "ALL"){
+        table.column(n).search( '' ).draw();
+    }else{
+        console.log(that.parent);
+        filteredData = table.column(n).search(txtfilter).draw();
+    }
+}
+    
 $(document).ready(function(){
 	$('.filter h4').on('click', function() {
 		$(this).parent().find(".menu-filtrado")[0].classList.toggle('active');
 	});
 	
-	$('ul.listado li').click(function() {
-		var txtfilter = $(this).text().toUpperCase().replace(/\s/g,"-");
-		if (txtfilter == "ALL"){
-			$('#packet-table tr').each(function(){
-				$(this).fadeIn('slow').removeClass('hidden');
-			});
-		} else {
-			var pktcount = $('#packet-table tr').length;
-			$('#packet-table tr').each(function(){
-				var pktid = $(this).attr("id");
-				if(!$(this).children("#protocol").hasClass(txtfilter)){
-					if (pktid != "table-header"){
-						$(this).fadeOut('normal').addClass('hidden');
-					}
-				}else{
-					$(this).fadeIn('slow').removeClass('hidden');
-				}
-				
-			});
-		}
-	});
-	
-	$('#ipsrc-form').submit(function(event){
-		var ipsrc = $("#ipsrc-form").children()[1].value;
-		if (ipsrc != ""){
-			$('#packet-table tr').each(function(){
-				var pktid = $(this).attr("id");
-				if(!$(this).children("#ipsrc").hasClass(ipsrc)){
-					if (pktid != "table-header"){
-						$(this).fadeOut('normal').addClass('hidden');
-					}
-				}else{
-					$(this).fadeIn('slow').removeClass('hidden');
-				}
-			});
-		} else {
-			$('#packet-table tr').each(function(){
-				$(this).fadeIn('slow').removeClass('hidden');
-			});
-		}
-		event.preventDefault();
-	});
-	
-	$('#ipdst-form').submit(function(event){
-		var ipdst = $("#ipdst-form").children()[1].value;
-		if (ipsrc != ""){
-			$('#packet-table tr').each(function(){
-				var pktid = $(this).attr("id");
-				if(!$(this).children("#ipdst").hasClass(ipdst)){
-					if (pktid != "table-header"){
-						$(this).fadeOut('normal').addClass('hidden');
-					}
-				}else{
-					$(this).fadeIn('slow').removeClass('hidden');
-				}
-			});
-		} else {
-			$('#packet-table tr').each(function(){
-				$(this).fadeIn('slow').removeClass('hidden');
-			});
-		}
-		event.preventDefault();
-	});
-	
-	$('#macsrc-form').submit(function(event){
-		var macsrc = $("#macsrc-form").children()[1].value;
-		if (macsrc != ""){
-			$('#packet-table tr').each(function(){
-				var pktid = $(this).attr("id");
-				if(!$(this).children("#ethsrc").hasClass(macsrc)){
-					if (pktid != "table-header"){
-						$(this).fadeOut('normal').addClass('hidden');
-					}
-				}else{
-					$(this).fadeIn('slow').removeClass('hidden');
-				}
-			});
-		} else {
-			$('#packet-table tr').each(function(){
-				$(this).fadeIn('slow').removeClass('hidden');
-			});
-		}
-		event.preventDefault();
-	});
-	
-	$('#macdst-form').submit(function(event){
-		var macdst = $("#macdst-form").children()[1].value;
-		if (macdst != ""){
-			$('#packet-table tr').each(function(){
-				var pktid = $(this).attr("id");
-				if(!$(this).children("#ethdst").hasClass(macdst)){
-					if (pktid != "table-header"){
-						$(this).fadeOut('normal').addClass('hidden');
-					}
-				}else{
-					$(this).fadeIn('slow').removeClass('hidden');
-				}
-			});
-		} else {
-			$('#packet-table tr').each(function(){
-				$(this).fadeIn('slow').removeClass('hidden');
-			});
-		}
-		event.preventDefault();
-	});
+    
+	$('#filter-ip-src ul.listado li').click( function(){
+        filterdatatable(this,3);
+    });
+    
+    $('#filter-ip-dst ul.listado li').click( function(){
+        filterdatatable(this,4);
+    });
+
+    $('#filter-proto ul.listado li').click( function(){
+        filterdatatable(this,7);
+    });
+    
+    $('#filter-mac-src ul.listado li').click( function(){
+        filterdatatable(this,1);
+    });
+    $('#filter-mac-dst ul.listado li').click( function(){
+        filterdatatable(this,2);
+    });
+    
+    $('#filter-port ul.listado li').click( function(){
+        filterdatatable(this,5);
+    });
+    
+    $('#filter-port-dst ul.listado li').click( function(){
+        filterdatatable(this,6);
+    });
+    
 });
+
+
