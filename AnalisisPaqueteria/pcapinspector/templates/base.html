@@ -47,6 +47,7 @@
 			<li><span data-url="{% url 'map' %}">Map</span></li>
 			<li><span data-url="{% url 'graph' %}">Graph</span></li>
 			<li><span data-url="{% url 'stats' %}">Stats</span></li>
+			<li><span data-url="{% url 'ipinfo' %}">IPInfo</span></li>
             {% if user.is_authenticated %}
             <li><span data-url="{% url 'logout_view' %}?next={{ request.path }}">Logout</span></li>
             {% else %}

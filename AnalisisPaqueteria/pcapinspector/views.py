@@ -4,12 +4,14 @@ from django.core.files.storage import FileSystemStorage
 from .models import PcapInfo
 from django.urls import reverse
 import json
+import requests
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 
 from .core.generate_csv import load_pcap_to_model
 from .core.filtering import analyze_dataframe
+from .core.network import net
 from .forms import LoginForm, SignupForm
 from django_pandas.io import read_frame
 import os.path
@@ -62,7 +64,8 @@ def logout_view(request):
     logout(request)
     return redirect(request.GET['next'])
 
-#necesito pasarlle o usuario
+
+# necesito pasarlle o usuario
 def list_pcaps(user):
     context = {
         'list_pcaps_example': [],
@@ -80,11 +83,11 @@ def list_pcaps(user):
 
     # List of files in your MEDIA_ROOT/user
     if user in listdir(settings.MEDIA_ROOT):
-        media_path = settings.MEDIA_ROOT + '/' + user 
+        media_path = settings.MEDIA_ROOT + '/' + user
         myfiles = [f for f in listdir(media_path) if isfile(join(media_path, f))]
         context['list_pcaps_user'] = myfiles
         for f in myfiles:
-            context['path_pcaps_user'].append(settings.MEDIA_ROOT + "/" + user + '/' +f)
+            context['path_pcaps_user'].append(settings.MEDIA_ROOT + "/" + user + '/' + f)
 
     return context
 
@@ -117,12 +120,13 @@ def index(request):
         portsrc = analyze_dataframe(df).get_endpoints_port()
         portdst = analyze_dataframe(df).get_endpoints_port_dst()
         context = {'all_packets': pcap_data, 'login_form': login_form, 'signup_form ': signup_form,
-                   'login_error': login_error, 'ipsrc':ipsrc, 'ipdst':ipdst, 'protos':protos, 'portsrc':portsrc, 
-                   'portdst':portdst, 'macsrc':macsrc, 'macdst':macdst}
+                   'login_error': login_error, 'ipsrc': ipsrc, 'ipdst': ipdst, 'protos': protos, 'portsrc': portsrc,
+                   'portdst': portdst, 'macsrc': macsrc, 'macdst': macdst}
     else:
         context = {'login_form': login_form, 'signup_form': signup_form, 'login_error': login_error}
 
     return render(request, 'index.html', context)
+
 
 @login_required(login_url='/login')
 def upload(request):
@@ -143,7 +147,7 @@ def upload(request):
     if request.method == 'POST' and (request.FILES['pcap'] and request.user.is_authenticated):
         media_path = settings.MEDIA_ROOT
         dir_exist = False
-        for f in listdir(media_path): 
+        for f in listdir(media_path):
             something = join(media_path, f)
             if isdir(something) and (str(f) == str(request.user)):
                 dir_exist = True
@@ -156,15 +160,15 @@ def upload(request):
         if (pcap_file_split[1] == 'pcap') or (pcap_file_split[1] == 'pcapng'):
             requser = request.user
             user_path = media_path + '/' + str(requser)
-            #print('User path '+ user_path)
+            # print('User path '+ user_path)
             fs = FileSystemStorage(location=user_path, base_url=settings.MEDIA_URL + str(requser))
             filename = fs.save(pcap_file.name, pcap_file)
             uploaded_file_url = fs.url(filename)
-            #print("Proba " + uploaded_file_url)
+            # print("Proba " + uploaded_file_url)
             context = load_pcap(uploaded_file_url, requser)
             return render(request, 'upload.html', context.update(
                 {'login_form': login_form, 'signup_form ': signup_form, 'login_error': login_error}))
-        else :
+        else:
             return render(request, 'nopcap.html')
 
     return render(request, 'upload.html',
@@ -176,7 +180,7 @@ def stats(request):
     requser = request.user
     pcap_data = PcapInfo.objects.filter(user=requser)
     df = read_frame(pcap_data)
-    # x = [x.protocol for x in pcap_data]
+
     chart_l_ip_src = analyze_dataframe(df).lollypop('ip_src', 'Ocurrencias de Dir. IP de origen',
                                                     'Número de Ocurrencias')
     chart_l_ip_dst = analyze_dataframe(df).lollypop('ip_dst', 'Ocurrencias de Dir. IP de destino',
@@ -185,8 +189,49 @@ def stats(request):
     chart_p_src_port = analyze_dataframe(df).pie_chart('src_port', 'Puertos más usados en origen', 'Ports')
     chart_p_dst_port = analyze_dataframe(df).pie_chart('dst_port', 'Puertos más usados en destino', 'Ports')
     return render(request, 'stats.html',
-                  {'chart0': chart_protocols, 'chart1': chart_l_ip_src, 'chart2': chart_l_ip_dst, 'chart3': chart_p_src_port,
+                  {'chart0': chart_protocols, 'chart1': chart_l_ip_src, 'chart2': chart_l_ip_dst,
+                   'chart3': chart_p_src_port,
                    'chart4': chart_p_dst_port})
+
+
+@login_required(login_url='/login')
+def ipinfo(request):
+    requser = request.user
+    pcap_data = PcapInfo.objects.filter(user=requser)
+    df = read_frame(pcap_data)
+    ABUSEIPDB_KEY = '0db808622fb894e2b928cfd91ff8399b8136831e68e3bff870bbf29ec01bc6d30b277d9722c0c992'
+    # Defining the api-endpoint
+    url = 'https://api.abuseipdb.com/api/v2/check'
+    ip_list = analyze_dataframe(df).get_endpoints_ip()
+
+    headers = {
+        'Accept': 'application/json',
+        'Key': ABUSEIPDB_KEY
+    }
+
+    public_ips = []
+    for ip in ip_list:
+        if not net().is_local_net(ip):
+            public_ips.append(ip)
+
+    list_of_dicts = []
+    for ip in public_ips:
+        querystring = {'ipAddress': ip}
+        response = requests.request(method='GET', url=url, headers=headers, params=querystring)
+
+        # Formatted output
+        decodedResponse = json.loads(response.text)
+        abuse_score = decodedResponse['data']['abuseConfidenceScore']
+        domain = decodedResponse['data']['domain']
+        hostname = decodedResponse['data']['hostnames'][0]
+        usage = decodedResponse['data']['usageType']
+
+        dict = {"ip": ip, "domain": domain, "hostname": hostname, "usage": usage, "abusescore": abuse_score}
+        dict_copy = dict.copy()
+        list_of_dicts.append(dict_copy)
+
+    return render(request, 'ipinfo.html',
+                  {'api_info': list_of_dicts})
 
 
 @login_required(login_url='/login')
@@ -207,14 +252,14 @@ def pcaps(request):
 
 @login_required(login_url='/login')
 def select_pcap(request, filename):
-    #necesito saber de que carpeta teño que coller as cousas
+    # necesito saber de que carpeta teño que coller as cousas
     requser = request.user
-    #context = load_pcap('/media/' + filename, requser)
-    #solución bruta
+    # context = load_pcap('/media/' + filename, requser)
+    # solución bruta
     for f in listdir(settings.MEDIA_ROOT + '/example'):
         if f == filename:
             context = load_pcap('/media/example/' + filename, requser)
             return index(request)
     context = load_pcap('/media/' + str(requser) + '/' + filename, requser)
-    #return render(request, 'pcaps.html', context)
+    # return render(request, 'pcaps.html', context)
     return index(request)

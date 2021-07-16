@@ -98,16 +98,38 @@
 	float:left;
 }
 
+#info-table{
+	float:left;
+	width:70%;
+	clear:none;
+}
+
+#info-table_wrapper{
+	clear:none;
+	width:55%;
+	float:left;
+}
+
 #upload{padding:10px;margin-left:100px;}
 
 .filter-button{width:100%;color:white;background-color:#313443;transition:all 0.6 ease;}
 .filter-button:hover {background-color:white;}
 
 #packet-table tr:nth-child(even){background-color: #f2f2f2;}
+#info-table tr:nth-child(even){background-color: #f2f2f2;}
 
 #packet-table tr:hover {background-color: #ddd;}
+#info-table tr:hover {background-color: #ddd;}
 
 #packet-table th {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  text-align: center;
+  background-color:  #313443;
+  color: white;
+}
+
+#info-table th {
   padding-top: 6px;
   padding-bottom: 6px;
   text-align: center;
