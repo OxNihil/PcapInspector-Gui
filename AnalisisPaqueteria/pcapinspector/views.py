@@ -41,9 +41,6 @@ def register_view(request):
         else:
             f = UserCreationForm()
     form = SignupForm()
-    #cada vez que se cree un usuario creamo a carpeta en media
-    #dirname = logname
-    #os.mkdir(os.path.join('/media', dirname))
     return render(request, 'register.html', {'form': form})
 
 
@@ -154,16 +151,21 @@ def upload(request):
         if dir_exist == False:
             os.mkdir(os.path.join(settings.MEDIA_ROOT, str(request.user)))
         pcap_file = request.FILES['pcap']
-        requser = request.user
-        user_path = media_path + '/' + str(requser)
-        print('User path '+ user_path)
-        fs = FileSystemStorage(location=user_path, base_url=settings.MEDIA_URL + str(requser))
-        filename = fs.save(pcap_file.name, pcap_file)
-        uploaded_file_url = fs.url(filename)
-        print("Proba " + uploaded_file_url)
-        context = load_pcap(uploaded_file_url, requser)
-        return render(request, 'upload.html', context.update(
-            {'login_form': login_form, 'signup_form ': signup_form, 'login_error': login_error}))
+        pcap_file_split = str(pcap_file).split('.')
+        print(pcap_file_split)
+        if (pcap_file_split[1] == 'pcap') or (pcap_file_split[1] == 'pcapng'):
+            requser = request.user
+            user_path = media_path + '/' + str(requser)
+            #print('User path '+ user_path)
+            fs = FileSystemStorage(location=user_path, base_url=settings.MEDIA_URL + str(requser))
+            filename = fs.save(pcap_file.name, pcap_file)
+            uploaded_file_url = fs.url(filename)
+            #print("Proba " + uploaded_file_url)
+            context = load_pcap(uploaded_file_url, requser)
+            return render(request, 'upload.html', context.update(
+                {'login_form': login_form, 'signup_form ': signup_form, 'login_error': login_error}))
+        else :
+            return render(request, 'nopcap.html')
 
     return render(request, 'upload.html',
                   {'login_form': login_form, 'signup_form ': signup_form, 'login_error': login_error})

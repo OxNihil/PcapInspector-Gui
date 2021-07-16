@@ -10,8 +10,8 @@ from django_pandas.io import read_frame
 
 def gen_csv(pcap_file):
     f_in = settings.BASE_DIR + pcap_file
-    print('Estes es el directorio base ' + settings.BASE_DIR + '\n')
-    print('Estes es el directorio f_in ' + f_in + '\n')
+    #print('Estes es el directorio base ' + settings.BASE_DIR + '\n')
+    #print('Estes es el directorio f_in ' + f_in + '\n')
     f_out = settings.BASE_DIR + "/pcapinspector/tmp/tmp.csv"
     #f_out = "pcapinspector/tmp/tmp.csv"
     tshark_template = 'tshark -r {} -T fields  -e frame.number -e frame.time -e eth.src -e eth.dst -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport  ' \

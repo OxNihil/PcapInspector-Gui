@@ -26,22 +26,20 @@ def load(requser):
 		num2 = int(public[1])
 		num3 = int(public[2])
 		num4 = int(public[3])
-		if ((num1 == 10) | (num1 == 172 and num2 >=16 and num2 <= 31) 
-			| (num1 == 192 and num2 == 168)) :
+
+		if (num1 >= 224 and num1 <= 239):
 			continue
-		if num1 == "224" and num2 == "0" and num3 == "0":
-			return True
-		if num1 == "192" and num2 == "168" and num4 == "255":
+		if num1 == 192 and num2 == 168 and num4 == 255:
 			continue
-		if num1 == "255" and num2 == "255" and num3 == "255" and num4 == "255":
+		if num1 == 255 and num2 == 255 and num3 == 255 and num4 == 255:
 			continue
-		if num1 == "127":
+		if num1 == 127:
 			continue
-		if (num1 =="192" and num2 =="168"):
+		if (num1 ==192 and num2 ==168):
 			continue
-		if num1 == "10":
+		if num1 == 10:
 			continue
-		if num1 == "172" and (int(num2) > 15 and int(num3) < 32):
+		if num1 == 172 and (int(num2) > 15 and int(num3) < 32):
 			continue
 		ip_return.append(ip)
 
