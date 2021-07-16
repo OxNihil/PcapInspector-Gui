@@ -157,7 +157,7 @@ def upload(request):
         requser = request.user
         user_path = media_path + '/' + str(requser)
         print('User path '+ user_path)
-        fs = FileSystemStorage(user_path)
+        fs = FileSystemStorage(location=user_path, base_url=settings.MEDIA_URL + str(requser))
         filename = fs.save(pcap_file.name, pcap_file)
         uploaded_file_url = fs.url(filename)
         print("Proba " + uploaded_file_url)
