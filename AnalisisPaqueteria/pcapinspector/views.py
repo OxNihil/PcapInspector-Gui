@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 
 from .core.generate_csv import load_pcap_to_model
 from .core.filtering import analyze_dataframe
-from .core.network import net,analyze_scapy
+from .core.network import net, analyze_scapy
 from .forms import LoginForm, SignupForm
 from django_pandas.io import read_frame
 import os.path
@@ -22,30 +22,33 @@ from os.path import isfile, join, isdir
 
 # Auxiliar
 def load_scapy(requser):
-	pcap = PcapInfo.objects.filter(user=requser).first().pcap_url
-	pcap_url =  settings.BASE_DIR + pcap
-	data = analyze_scapy(pcap_url).fast_scan()
-	print("gateway:"+data.gateway)
-	print("vlans:"+str(data.vlans))
-	print("netbios: "+str(data.netbios))
-	return requser
+    pcap = PcapInfo.objects.filter(user=requser).first().pcap_url
+    pcap_url = settings.BASE_DIR + pcap
+    data = analyze_scapy(pcap_url).fast_scan()
+    print("gateway:" + data.gateway)
+    print("vlans:" + str(data.vlans))
+    print("netbios: " + str(data.netbios))
+    return requser
 
-def load_pcap(url, requser,filename):
+
+def load_pcap(url, requser, filename):
     # scan = UserScan.objects.get_or_create(user=requser)
     # Borramos las filas asociadas a la captura del user
     PcapInfo.objects.filter(user=requser).delete()
     # generamos y cargamos csv al modelo
-    load_pcap_to_model(url, requser,filename)
+    load_pcap_to_model(url, requser, filename)
     # Visualizamos los datos
     all_objects = PacketInfo.objects.filter(pcap__user=requser)
     context = {'uploaded_file_url': filename, 'all_packets': all_objects}
     return context
 
+
 @login_required(login_url='/login')
 def dashboard(request):
     requser = request.user
     load_scapy(requser)
-    return render(request,'dashboard.html')
+    return render(request, 'dashboard.html')
+
 
 def register_view(request):
     if request.method == 'POST':
@@ -178,7 +181,7 @@ def upload(request):
             filename = fs.save(pcap_file.name, pcap_file)
             uploaded_file_url = fs.url(filename)
             # print("Proba " + uploaded_file_url)
-            context = load_pcap(uploaded_file_url, requser,filename)
+            context = load_pcap(uploaded_file_url, requser, filename)
             return render(request, 'upload.html', context.update(
                 {'login_form': login_form, 'signup_form ': signup_form, 'login_error': login_error}))
         else:
@@ -231,20 +234,22 @@ def ipinfo(request):
     for ip in public_ips:
         querystring = {'ipAddress': ip}
         response = requests.request(method='GET', url=url, headers=headers, params=querystring)
+        if response.status_code == 200:
+            # Formatted output
+            decodedResponse = json.loads(response.text)
+            abuse_score = decodedResponse['data']['abuseConfidenceScore']
+            domain = decodedResponse['data']['domain']
+            try:
+                hostname = decodedResponse['data']['hostnames'][0]
+            except IndexError:
+                hostname = ''
+            usage = decodedResponse['data']['usageType']
 
-        # Formatted output
-        decodedResponse = json.loads(response.text)
-        abuse_score = decodedResponse['data']['abuseConfidenceScore']
-        domain = decodedResponse['data']['domain']
-        hostname = decodedResponse['data']['hostnames'][0]
-        usage = decodedResponse['data']['usageType']
+            dict = {"ip": ip, "domain": domain, "hostname": hostname, "usage": usage, "abusescore": abuse_score}
+            dict_copy = dict.copy()
+            list_of_dicts.append(dict_copy)
 
-        dict = {"ip": ip, "domain": domain, "hostname": hostname, "usage": usage, "abusescore": abuse_score}
-        dict_copy = dict.copy()
-        list_of_dicts.append(dict_copy)
-
-    return render(request, 'ipinfo.html',
-                  {'api_info': list_of_dicts})
+    return render(request, 'ipinfo.html', {'api_info': list_of_dicts})
 
 
 @login_required(login_url='/login')
@@ -271,8 +276,8 @@ def select_pcap(request, filename):
     # solución bruta
     for f in listdir(settings.MEDIA_ROOT + '/example'):
         if f == filename:
-            context = load_pcap('/media/example/' + filename, requser,filename)
+            context = load_pcap('/media/example/' + filename, requser, filename)
             return index(request)
-    context = load_pcap('/media/' + str(requser) + '/' + filename, requser,filename)
+    context = load_pcap('/media/' + str(requser) + '/' + filename, requser, filename)
     # return render(request, 'pcaps.html', context)
     return index(request)

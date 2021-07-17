@@ -1,27 +1,31 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
- <table id="info-table">
-     <thead>
-         <tr id="table-header">
-             <th>Public IP Adress</th>
-             <th>Domain</th>
-             <th>Hostname</th>
-             <th>Usage</th>
-             <th>AbuseIPDB Score</th>
-            </tr>
-     </thead>
-     <tbody>
+<script>
+$(document).ready( function () {
+    $('#info-table').DataTable({"sDom": '<"top">rt<"bottom"pfl><"clear">', "iDisplayLength": 10});
+} );
+</script>
+<table id="info-table">
+    <thead>
+        <tr id="table-header">
+         <th>Public IP Adress</th>
+         <th>Domain</th>
+         <th>Hostname</th>
+         <th>Usage</th>
+         <th>AbuseIPDB Score</th>
+        </tr>
+    </thead>
+    <tbody>
     {% if api_info %}
         {% for info in api_info %}
-          <tr id="{{ info.ip }}" >
-            <td id="infoip" class="{{ info.ip}}">{{ info.ip }}</td>
-            <td id="infodomain" class="{{ info.domain}}">{{ info.domain }}</td>
-            <td id="infohostname" class="{{ info.hostname }}">{{ info.hostname }}</td>
-            <td id="infousage" class="{{ info.usage }}" >{{ info.usage }}</td>
-            <td id="infoabusescore" class="{{ info.abusescore }}" >{{ info.abusescore }}</td>
-          </tr>
+        <tr id="{{ info.ip }}" >
+        <td id="infoip" class="{{ info.ip}}">{{ info.ip }}</td>
+        <td id="infodomain" class="{{ info.domain}}">{{ info.domain }}</td>
+        <td id="infohostname" class="{{ info.hostname }}">{{ info.hostname }}</td>
+        <td id="infousage" class="{{ info.usage }}" >{{ info.usage }}</td>
+        <td id="infoabusescore" class="{{ info.abusescore }}" >{{ info.abusescore }}</td>
+        </tr>
           {% endfor %}
     {% endif %}
     </tbody>

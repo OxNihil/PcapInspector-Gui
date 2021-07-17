@@ -100,13 +100,14 @@
 
 #info-table{
 	float:left;
-	width:70%;
+	width:100%;
 	clear:none;
 }
 
 #info-table_wrapper{
 	clear:none;
-	width:55%;
+	width:85%;
+	font-size:16px;
 	float:left;
 }
 
