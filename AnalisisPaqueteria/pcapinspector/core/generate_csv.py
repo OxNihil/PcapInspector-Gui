@@ -39,7 +39,7 @@ def load_csv_to_model(path,fpcap):
                     dstport = row[7]
                 elif (row[9] != ""):
                     dstport = row[9]
-                _, created = PacketInfo.objects.get_or_create(
+                _, created = PacketInfo.objects.update_or_create(
                     frame_number=row[0],
                     frame_time=row[1],
                     eth_src=row[2],
@@ -63,8 +63,10 @@ def load_pcap_info_model(pcap_file,requser,filename):
 	
 def load_pcap_to_model(pcap_file,requser,filename):
     csv_path = gen_csv(pcap_file)
+    df = csv_to_dataframe(csv_path)
     pcap = load_pcap_info_model(pcap_file,requser,filename)
-    load_csv_to_model(csv_path,pcap)
+    pandas_to_model(df,pcap)
+
 
 
 def csv_to_dataframe(path):
@@ -77,14 +79,50 @@ def model_to_dataframe(modelo):
     df = read_frame(data)
     return df
 
+def parse_record(record):
+	for r in record:
+		try:
+			if r == "eth.src" or r == "eth.dst" or r == "ip.src" or r == "ip.dst":
+				if np.isnan(record[r]):
+					record[r] = ""
+			else:
+				if np.isnan(record[r]):
+					record[r] = np.nan_to_num(record[r])
+		except:
+			continue
+	return record
 
-def dataframe_to_model(df, modelo):
-    # Borramos datos previos
-    modelo.objects.all().delete()
-    s = df.stack()
-    df = s.unstack()
-    # Añadimos datos
-    json_list = json.loads(json.dumps(list(df.T.to_dict().values())))
-    for dic in json_list:
-        modelo.objects.get_or_create(**dic)
-    return modelo
+def pandas_to_model(df,fpcap):
+	df_records = df.to_dict('records')	
+	model_instances = []
+	for record in df_records:
+		record = parse_record(record)
+		srcport=0
+		dstport=0
+		if record['tcp.srcport'] > 0:
+			srcport=record['tcp.srcport']
+		elif record['udp.srcport'] > 0:
+			srcport=record['udp.srcport']
+		if record['tcp.dstport'] > 0:
+			dstport=record['tcp.dstport']
+		elif record['udp.dstport'] > 0:
+			dstport=record['udp.dstport']
+		srcport = int(float(srcport))
+		dstport = int(float(dstport))
+		packet = PacketInfo(
+				frame_number=record['frame.number'],
+				frame_time=record['frame.time'],	
+				eth_src=record['eth.src'],
+				eth_dst=record['eth.dst'],
+				ip_src=record['ip.src'],
+				ip_dst=record['ip.dst'],
+				src_port=srcport,
+				dst_port=dstport,
+				ttl=record['ip.ttl'],
+				protocol=record['_ws.col.Protocol'],
+				ip_len=record['ip.len'],
+				pcap=fpcap,
+		)
+		model_instances.append(packet)
+	PacketInfo.objects.bulk_create(model_instances)
+

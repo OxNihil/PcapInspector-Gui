@@ -30,7 +30,7 @@ class PacketInfo(models.Model):
     def __unicode__(self):
         return self.frame_number
     def __str__(self):
-    	return "%s %s" % (self.frame_number,self.user)
+    	return "%s %s" % (self.frame_number,self.pcap)
     class Meta:
     	unique_together = (('frame_number','pcap'),)
         
