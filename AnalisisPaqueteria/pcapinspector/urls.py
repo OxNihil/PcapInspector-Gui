@@ -11,6 +11,7 @@ urlpatterns=[
 	url(r'^maps/',views2.index, name='map'),
 	url(r'^stats/', views.stats, name='stats'),
 	url(r'^ipinfo/', views.ipinfo, name='ipinfo'),
+	url(r'^dashboard/',views.dashboard, name='dashboard'),
 	url(r'^graph/', views.graph, name='graph'),
 	url(r'^pcaps/',views.pcaps, name='pcaps'),
 	url(r'^(?P<filename>[\w.]{0,256})/$',views.select_pcap, name='select'),

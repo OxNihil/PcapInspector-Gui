@@ -4,14 +4,14 @@ import sqlalchemy as sa
 import pandas.io.sql as sql
 import requests
 import datapackage
-from pcapinspector.models import PcapInfo
+from pcapinspector.models import PacketInfo
 from django.contrib.auth.decorators import login_required
 from pcapinspector.core.network import *
 
 def load(requser):
 	ip_result = []
 	ip_return = []
-	ip_info = PcapInfo.objects.filter(user=requser)
+	ip_info = PacketInfo.objects.filter(pcap__user=requser)
 
 	for ip in ip_info:
 		ip_result.append(ip.ip_src)

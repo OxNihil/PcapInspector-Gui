@@ -4,7 +4,7 @@ import os
 import csv
 import json
 from django.conf import settings
-from pcapinspector.models import PcapInfo
+from pcapinspector.models import PcapInfo, PacketInfo
 from django_pandas.io import read_frame
 
 
@@ -22,7 +22,7 @@ def gen_csv(pcap_file):
 
 
 # frame.number,frame.time,eth.src,eth.dst,ip.src,ip.dst,tcp.srcport,tcp.dstport,udp.srcport,udp.dstport,ip.ttl,_ws.col.Protocol,ip.len
-def load_csv_to_model(path,requser):
+def load_csv_to_model(path,fpcap):
     with open(path) as f:
         reader = csv.reader(f)
         # Saltamos las cabeceras
@@ -39,7 +39,7 @@ def load_csv_to_model(path,requser):
                     dstport = row[7]
                 elif (row[9] != ""):
                     dstport = row[9]
-                _, created = PcapInfo.objects.get_or_create(
+                _, created = PacketInfo.objects.get_or_create(
                     frame_number=row[0],
                     frame_time=row[1],
                     eth_src=row[2],
@@ -51,15 +51,20 @@ def load_csv_to_model(path,requser):
                     ttl=row[10],
                     protocol=row[11],
                     ip_len=row[12],
-                    user=requser
+                    pcap=fpcap
                 )
-            except:
-                continue           
+            except Exception as e:
+            	continue           
 
-
-def load_pcap_to_model(pcap_file,requser):
+def load_pcap_info_model(pcap_file,requser,filename):
+	PcapInfo.objects.filter(user=requser).delete()
+	p = PcapInfo.objects.create(pcap_name=filename, pcap_url=pcap_file, user=requser)
+	return p
+	
+def load_pcap_to_model(pcap_file,requser,filename):
     csv_path = gen_csv(pcap_file)
-    load_csv_to_model(csv_path,requser)
+    pcap = load_pcap_info_model(pcap_file,requser,filename)
+    load_csv_to_model(csv_path,pcap)
 
 
 def csv_to_dataframe(path):

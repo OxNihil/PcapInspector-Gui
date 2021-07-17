@@ -1,20 +1,26 @@
 from scapy.all import *
+from scapy.layers import http
 
 #Registro2
 class data_analyze():
 	def __init__(self):
 		self.gateway = ""
+		self.vlans = []
+		self.netbios = {}
+		
 
 class analyze_scapy():
 	def __init__(self,pcap_file):
 		self.file = pcap_file
 		self.packets = rdpcap(pcap_file) 
 		self.data = data_analyze()
-	def fast_scan():
+	def fast_scan(self):
 		for packet in self.packets:
 			self.try_guess_gw(packet)
+			self.check_for_vlans(packet)
+			self.check_for_netbios(packet)
 			#Añadir funciones...
-			
+		return self.data
 	def try_guess_gw(self,packet):
 		#Si se captura una petición DHCP
 		if packet.haslayer(DHCP):
@@ -28,8 +34,21 @@ class analyze_scapy():
 			#IGMPv3
 			if packet[IP].proto == 2:
 				self.data.gateway = packet[IP].src
+	def check_for_vlans(self,packet):
+		if packet.haslayer(Dot1Q):
+			vlan = packet[Dot1Q].vlan
+			if vlan not in self.data.vlans:
+				self.data.vlans.append(vlan)
+	def check_for_netbios(self,packet):
+		#NBT - NETBIOS over Tcp
+		if packet.haslayer(NBTDatagram):
+			fields = packet[NBTDatagram].fields
+			sip = fields['SourceIP']
+			sname = fields['SourceName'].decode("utf-8",errors="ignore")
+			self.data.netbios[sip] = sname
 
 
+			
 class net():
 	def return_ttl_so_name(self,ttl_number):
 		ttl_number = int(ttl_number)
