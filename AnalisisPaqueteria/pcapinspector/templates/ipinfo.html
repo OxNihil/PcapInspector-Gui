@@ -13,6 +13,7 @@ $(document).ready( function () {
          <th>Public IP Adress</th>
          <th>Domain</th>
          <th>Hostname</th>
+         <th>ISP</th>
          <th>Usage</th>
          <th>AbuseIPDB Score</th>
         </tr>
@@ -24,6 +25,7 @@ $(document).ready( function () {
         <td id="infoip" class="{{ info.ip}}">{{ info.ip }}</td>
         <td id="infodomain" class="{{ info.domain}}">{{ info.domain }}</td>
         <td id="infohostname" class="{{ info.hostname }}">{{ info.hostname }}</td>
+        <td id="infoisp" class="{{ info.isp }}">{{ info.isp }}</td>
         <td id="infousage" class="{{ info.usage }}" >{{ info.usage }}</td>
         <td id="infoabusescore" class="{{ info.abusescore }}" >{{ info.abusescore }}</td>
         </tr>

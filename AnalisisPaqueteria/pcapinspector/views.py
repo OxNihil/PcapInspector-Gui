@@ -34,20 +34,20 @@ def load_scapy(requser):
 
 
 def load_pcap(url, requser, filename):
-	print(settings.BLACKLIST,filename)
-	if filename in settings.BLACKLIST:
-		return
-	try:
-		# Borramos las filas asociadas a la captura del user
-		PcapInfo.objects.filter(user=requser).delete()
-		# generamos y cargamos csv al modelo
-		load_pcap_to_model(url, requser, filename)
-		# Visualizamos los datos
-		all_objects = PacketInfo.objects.filter(pcap__user=requser)
-		context = {'uploaded_file_url': filename, 'all_packets': all_objects}
-		return context
-	except:
-		return {}
+    print(settings.BLACKLIST, filename)
+    if filename in settings.BLACKLIST:
+        return
+    try:
+        # Borramos las filas asociadas a la captura del user
+        PcapInfo.objects.filter(user=requser).delete()
+        # generamos y cargamos csv al modelo
+        load_pcap_to_model(url, requser, filename)
+        # Visualizamos los datos
+        all_objects = PacketInfo.objects.filter(pcap__user=requser)
+        context = {'uploaded_file_url': filename, 'all_packets': all_objects}
+        return context
+    except:
+        return {}
 
 
 @login_required(login_url='/login')
@@ -189,14 +189,14 @@ def upload(request):
             os.mkdir(os.path.join(settings.MEDIA_ROOT, str(request.user)))
         pcap_file = request.FILES['pcap']
         if pcap_file.size > settings.MAX_UPLOAD_SIZE:
-        	context = {"maxsize":settings.MAX_UPLOAD_SIZE}
-        	return render(request, 'bigfile.html',context)
+            context = {"maxsize": settings.MAX_UPLOAD_SIZE}
+            return render(request, 'bigfile.html', context)
         print(pcap_file.size)
         pcap_file_split = str(pcap_file).split('.')
         if (pcap_file_split[1] == 'pcap') or (pcap_file_split[1] == 'pcapng') or (pcap_file_split[1] == 'cap'):
             requser = request.user
             user_path = media_path + '/' + str(requser)
-            pcap_file.name = pcap_file.name.translate ({ord(c): "_" for c in " !@#$%^&*()[]{};:,/<>?\|`~-=-+"})
+            pcap_file.name = pcap_file.name.translate({ord(c): "_" for c in " !@#$%^&*()[]{};:,/<>?\|`~-=-+"})
             fs = FileSystemStorage(location=user_path, base_url=settings.MEDIA_URL + str(requser))
             filename = fs.save(pcap_file.name, pcap_file)
             uploaded_file_url = fs.url(filename)
@@ -213,7 +213,7 @@ def upload(request):
 @login_required(login_url='/login')
 def stats(request):
     requser = request.user
-    pcap_data = PacketInfo.objects.filter(pcap__user = requser)
+    pcap_data = PacketInfo.objects.filter(pcap__user=requser)
     if not pcap_data:
         return render(request, 'nopcap.html')
     df = read_frame(pcap_data)
@@ -222,21 +222,21 @@ def stats(request):
         chart_protocols = analyze_dataframe(df).hist()
     except AttributeError:
         chart_protocols = ''
-    chart_l_ip_src = analyze_dataframe(df).lollypop('ip_src', 'Ocurrencias de Dir. IP de origen',
-                                                    'Número de Ocurrencias')
-    chart_l_ip_dst = analyze_dataframe(df).lollypop('ip_dst', 'Ocurrencias de Dir. IP de destino',
-                                                    'Número de Ocurrencias')
-    chart_p_src_port = analyze_dataframe(df).pie_chart('src_port', 'Puertos más usados en origen', 'Ports')
-    chart_p_dst_port = analyze_dataframe(df).pie_chart('dst_port', 'Puertos más usados en destino', 'Ports')
+    chart_l_ip_src = analyze_dataframe(df).lollypop('ip_src', 'Source IP Address',
+                                                    'Occurrences')
+    chart_l_ip_dst = analyze_dataframe(df).lollypop('ip_dst', 'Destination IP Address',
+                                                    'Occurrences')
+    chart_p_src_port = analyze_dataframe(df).pie_chart('src_port', 'Most used source ports', 'Ports')
+    chart_p_dst_port = analyze_dataframe(df).pie_chart('dst_port', 'Most used destination ports', 'Ports')
     if chart_protocols == '':
         return render(request, 'stats.html',
                       {'chart1': chart_l_ip_src, 'chart2': chart_l_ip_dst,
                        'chart3': chart_p_src_port,
                        'chart4': chart_p_dst_port})
     return render(request, 'stats.html',
-                      {'chart0': chart_protocols, 'chart1': chart_l_ip_src, 'chart2': chart_l_ip_dst,
-                       'chart3': chart_p_src_port,
-                       'chart4': chart_p_dst_port})
+                  {'chart0': chart_protocols, 'chart1': chart_l_ip_src, 'chart2': chart_l_ip_dst,
+                   'chart3': chart_p_src_port,
+                   'chart4': chart_p_dst_port})
 
 
 @login_required(login_url='/login')
@@ -272,9 +272,10 @@ def ipinfo(request):
                 hostname = decodedResponse['data']['hostnames'][0]
             except IndexError:
                 hostname = ''
+            isp = decodedResponse['data']['isp']
             usage = decodedResponse['data']['usageType']
 
-            dict = {"ip": ip, "domain": domain, "hostname": hostname, "usage": usage, "abusescore": abuse_score}
+            dict = {"ip": ip, "domain": domain, "hostname": hostname, "isp": isp, "usage": usage, "abusescore": abuse_score}
             dict_copy = dict.copy()
             list_of_dicts.append(dict_copy)
 

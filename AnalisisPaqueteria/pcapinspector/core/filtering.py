@@ -124,7 +124,7 @@ class analyze_dataframe():
 
     def pie_chart(self, column, title, legend):
         valor = 6  # numero de items que queremos mostrar en la leyenda de forma independiente
-        fig, ax = plt.subplots(figsize=(10, 5), subplot_kw=dict(aspect="equal"))
+        fig, ax = plt.subplots(figsize=(8, 5), subplot_kw=dict(aspect="equal"))
         data = self.df[column].value_counts()
         protocols, values = data.index.tolist(), data.tolist()
         protocols_toprint, values_toprint = protocols[:valor], values[:valor]
@@ -160,13 +160,13 @@ class analyze_dataframe():
         # Plot and retrieve the axes
         df = self.df[['protocol', 'ip_len']]
         df = df.groupby(['protocol', 'ip_len']).count().reset_index()
-        axes = df.hist(by='protocol', figsize=(12, 6))
+        axes = df.hist(by='protocol', figsize=(16, 10))
 
         # Define a different color for the first five bars
         colors = ["#00d8ff", "#00b2ff", "#0090ff", "#0f87e4", "#177ecd"]
 
         for i, ax in enumerate(axes.reshape(-1)):
-            # Define a counter to ensure that if we have more than three bars with a value,
+            # Define a counter to ensure that if we have more than five bars with a value,
             # we don't try to access out-of-range element in colors
             k = 0
 
@@ -203,15 +203,15 @@ class analyze_dataframe():
         df.reset_index(inplace=True)
 
         # Draw plot
-        fig, ax = plt.subplots(figsize=(12, 8), dpi=60)
+        fig, ax = plt.subplots(figsize=(14,11), dpi=60)
         ax.vlines(x=df.index, ymin=0, ymax=df.counts, color='firebrick', alpha=0.7, linewidth=2)
         ax.scatter(x=df.index, y=df.counts, s=75, color='firebrick', alpha=0.7)
 
         # Title, Label, Ticks and Ylim
-        ax.set_title(title, fontdict={'size': 22})
-        ax.set_ylabel(legend)
+        ax.set_title(title, fontdict={'size': 20})
+        ax.set_ylabel(legend, fontdict={'size': 20})
         ax.set_xticks(df.index)
-        ax.set_xticklabels(df[column].str.upper(), rotation=60, fontdict={'horizontalalignment': 'right', 'size': 12})
+        ax.set_xticklabels(df[column].str.upper(), rotation=50, fontdict={'horizontalalignment': 'right', 'size': 10})
         # Ajuste de eje y
         ax.set_ylim(0, max_value * 1.1)
 
