@@ -22,15 +22,15 @@ from os.path import isfile, join, isdir
 
 # Auxiliar
 def load_scapy(requser):
-	pd = PcapInfo.objects.filter(user=requser).first()
-	if not pd:
-		data = data_analyze()
-		return data
-	else:
-		pcap = pd.pcap_url
-		pcap_url = settings.BASE_DIR + pcap
-		data = analyze_scapy(pcap_url).fast_scan()
-		return data 
+    pd = PcapInfo.objects.filter(user=requser).first()
+    if not pd:
+        data = data_analyze()
+        return data
+    else:
+        pcap = pd.pcap_url
+        pcap_url = settings.BASE_DIR + pcap
+        data = analyze_scapy(pcap_url).fast_scan()
+        return data
 
 
 def load_pcap(url, requser, filename):
@@ -49,17 +49,17 @@ def load_pcap(url, requser, filename):
 def report(request):
     requser = request.user
     data = load_scapy(requser)
-    print("gateway:"+str(data.gateway))
-    print("vlans:"+str(data.vlans))
-    print("netbios: "+str(data.netbios))
-    print("servers: "+str(data.servers))
-    print("rootbridge:"+str(data.root_bridge))
-    print("useragent: "+str(data.user_agents))
-    print("dns_q: "+str(data.dnsqd))
-    print("dns_an: "+str(data.dnsan))
-    print("alerts: "+str(data.alerts))
+    print("gateway:" + str(data.gateway))
+    print("vlans:" + str(data.vlans))
+    print("netbios: " + str(data.netbios))
+    print("servers: " + str(data.servers))
+    print("rootbridge:" + str(data.root_bridge))
+    print("useragent: " + str(data.user_agents))
+    print("dns_q: " + str(data.dnsqd))
+    print("dns_an: " + str(data.dnsan))
+    print("alerts: " + str(data.alerts))
     context = {'netdata': data}
-    return render(request,'report.html',context)
+    return render(request, 'report.html', context)
 
 
 def register_view(request):
@@ -206,8 +206,11 @@ def upload(request):
 @login_required(login_url='/login')
 def stats(request):
     requser = request.user
-    pcap_data = PacketInfo.objects.filter(pcap__user=requser)
+    pcap_data = PacketInfo.objects.filter(pcap__user = requser)
+    if not pcap_data:
+        return render(request, 'nopcap.html')
     df = read_frame(pcap_data)
+
 
     chart_l_ip_src = analyze_dataframe(df).lollypop('ip_src', 'Ocurrencias de Dir. IP de origen',
                                                     'Número de Ocurrencias')

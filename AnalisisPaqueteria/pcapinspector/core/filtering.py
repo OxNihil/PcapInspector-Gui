@@ -16,30 +16,37 @@ from .network import net
 class analyze_dataframe():
     def __init__(self, df):
         self.df = df
+
     def get_endpoints_ip(self):
         all_ips = self.df["ip_src"].dropna().unique()
         all_ips = list(dict.fromkeys(all_ips))
         return all_ips
+
     def get_endpoints_ip_dst(self):
         all_ips = self.df["ip_dst"].dropna().unique()
         all_ips = list(dict.fromkeys(all_ips))
         return all_ips
+
     def get_endpoints_proto(self):
-    	all_proto = self.df["protocol"].dropna().unique()
-    	all_proto = list(dict.fromkeys(all_proto))
-    	return all_proto
+        all_proto = self.df["protocol"].dropna().unique()
+        all_proto = list(dict.fromkeys(all_proto))
+        return all_proto
+
     def get_endpoints_mac(self):
         all_mac = self.df["eth_src"].dropna().unique()
         all_mac = list(dict.fromkeys(all_mac))
         return all_mac
+
     def get_endpoints_mac_dst(self):
         all_mac = self.df["eth_dst"].dropna().unique()
         all_mac = list(dict.fromkeys(all_mac))
         return all_mac
+
     def get_endpoints_port(self):
         all_port = self.df[self.df['src_port'] <= 49152]["src_port"].dropna().unique()
         all_port = list(dict.fromkeys(all_port))
         return all_port
+
     def get_endpoints_port_dst(self):
         all_port = self.df[self.df['dst_port'] <= 49152]["dst_port"].dropna().unique()
         all_port = list(dict.fromkeys(all_port))
@@ -210,7 +217,8 @@ class analyze_dataframe():
 
         # Annotate
         for row in df.itertuples():
-            ax.text(row.Index, row.counts + .5, s=round(row.counts, 2), horizontalalignment='center', verticalalignment='bottom', fontsize=14)
+            ax.text(row.Index, row.counts + .5, s=round(row.counts, 2), horizontalalignment='center',
+                    verticalalignment='bottom', fontsize=14)
 
         buffer = BytesIO()
         plt.savefig(buffer, format='png')
