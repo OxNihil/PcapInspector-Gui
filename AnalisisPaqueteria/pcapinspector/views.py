@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 
 from .core.generate_csv import load_pcap_to_model
 from .core.filtering import analyze_dataframe
-from .core.network import net, analyze_scapy
+from .core.network import net, analyze_scapy, data_analyze
 from .forms import LoginForm, SignupForm
 from django_pandas.io import read_frame
 import os.path
@@ -22,13 +22,15 @@ from os.path import isfile, join, isdir
 
 # Auxiliar
 def load_scapy(requser):
-    pcap = PcapInfo.objects.filter(user=requser).first().pcap_url
-    pcap_url = settings.BASE_DIR + pcap
-    data = analyze_scapy(pcap_url).fast_scan()
-    print("gateway:" + data.gateway)
-    print("vlans:" + str(data.vlans))
-    print("netbios: " + str(data.netbios))
-    return requser
+	pd = PcapInfo.objects.filter(user=requser).first()
+	if not pd:
+		data = data_analyze()
+		return data
+	else:
+		pcap = pd.pcap_url
+		pcap_url = settings.BASE_DIR + pcap
+		data = analyze_scapy(pcap_url).fast_scan()
+		return data 
 
 
 def load_pcap(url, requser, filename):
@@ -44,10 +46,20 @@ def load_pcap(url, requser, filename):
 
 
 @login_required(login_url='/login')
-def dashboard(request):
+def report(request):
     requser = request.user
-    load_scapy(requser)
-    return render(request, 'dashboard.html')
+    data = load_scapy(requser)
+    print("gateway:"+str(data.gateway))
+    print("vlans:"+str(data.vlans))
+    print("netbios: "+str(data.netbios))
+    print("servers: "+str(data.servers))
+    print("rootbridge:"+str(data.root_bridge))
+    print("useragent: "+str(data.user_agents))
+    print("dns_q: "+str(data.dnsqd))
+    print("dns_an: "+str(data.dnsan))
+    print("alerts: "+str(data.alerts))
+    context = {'netdata': data}
+    return render(request,'report.html',context)
 
 
 def register_view(request):

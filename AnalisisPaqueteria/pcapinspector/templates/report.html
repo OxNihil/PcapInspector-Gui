@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{%block content%}
+<div>
+	<h1 style="padding:10px;background-color:black;color:white;">Report</h1>
+
+	<div>
+		<table class="scapyTable table" style="width:20%;float:left;">
+			<thead>
+				<th colspan="2" scope="col">Network Information</th>
+			</thead>
+			<tbody>
+				<tr scope="row">
+					<td>Gateway</td>
+					<td>{{ netdata.gateway }}</td>
+				</tr>
+				<tr scope="row">
+					<td>Vlans</td>
+					<td>{{ netdata.vlans }}</td>
+				</tr>
+				<tr scope="row">
+					<td>Root Bridge</td>
+					<td>{{ netdata.root_bridge }}</td>
+				</tr>
+			</tbody>
+		</table>
+		<table class="scapyTable table"  style="width:20%;float:left;">
+			<thead>
+				<th scope="col">SERVERS</th>
+			</thead>
+			<tbody>
+				{% for i in netdata.servers %}
+				<tr scope="row">
+					<td>{{ i }}</td>
+				</tr>
+				{%endfor %}
+			</tbody>
+		</table>
+		<table class="scapyTable table"  style="width:20%;float:left;">
+			<thead>
+				<th colspan="2" scope="col">NETBIOS</th>
+			</thead>
+			<tbody>
+				{% for key, value in netdata.netbios.items %}
+				<tr scope="row">
+					<td>{{key}}</td>
+					<td>{{value}}</td>
+				</tr>
+				{%endfor %}
+			</tbody>
+		</table>
+		<table class="scapyTable table" style="width:20%;float:left;">
+			<thead>
+				<th scope="col">USER AGENTS</th>
+			</thead>
+			<tbody>
+				{% for i in netdata.user_agents %}
+				<tr scope="row">
+					<td>{{i}}</td>
+				</tr>
+				{%endfor %}
+			</tbody>
+		</table>
+		<table class="scapyTable table" style="width:20%;float:left;">
+			<thead>
+				<th colspan="2" scope="col">DNS ANSWERS</th>
+			</thead>
+			<tbody>
+				{% for key,value in netdata.dnsan.items %}
+				<tr scope="row">
+					<td>{{key}}</td>
+					<td>{{value}}</td>
+				</tr>
+				{%endfor %}
+			</tbody>
+		</table>
+		<table class="scapyTable table" style="width:20%;float:left;">
+			<thead>
+				<th scope="col">DNS QUESTIONS</th>
+			</thead>
+			<tbody>
+				{% for i in netdata.dnsqd %}
+				<tr scope="row">
+					<td>{{i}}</td>
+				</tr>
+				{%endfor %}
+			</tbody>
+		</table>
+		<table class="scapyTable table" style="width:20%;float:left;">
+			<thead>
+				<th scope="col">ALERTS</th>
+			</thead>
+			<tbody>
+				{% for i in netdata.alerts %}
+				<tr scope="row">
+					<td>{{i}}</td>
+				</tr>
+				{%endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+{% endblock %}

@@ -4,7 +4,8 @@
 <script src="{% static "pcapinspector/js/filters.js" %}"></script>
 <script>
 $(document).ready( function () {
-    $('#packet-table').DataTable({"sDom": '<"top">rt<"bottom"pfl><"clear">', "iDisplayLength": 10});
+    $('#packet-table').DataTable({"sDom": '<"top">rt<"bottom"pfl><"clear">', "iDisplayLength": 10,"autoWidth": false});
+    $('#table-container').width = "100%";
 } );
 </script>
 <main>
@@ -90,6 +91,7 @@ $(document).ready( function () {
 		</div>
 	</div>
 	<!-- Table --> 
+	<div id="table-container">
 	<table id="packet-table">
 		<thead>
 			<tr id="table-header">
@@ -122,6 +124,7 @@ $(document).ready( function () {
 		{% endif %}
 		</tbody>
 	</table>
+	</div>
 </main> 
 {% endblock %}
 

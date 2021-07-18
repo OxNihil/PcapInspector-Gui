@@ -94,7 +94,7 @@
 }
 #packet-table_wrapper{
 	clear:none;
-	width:85%;
+	width:100%;
 	float:left;
 }
 
@@ -130,6 +130,8 @@
   color: white;
 }
 
+#table-container {width:85%;}
+
 #info-table th {
   padding-top: 6px;
   padding-bottom: 6px;
@@ -138,6 +140,7 @@
   color: white;
 }
 
+.scapyTable{margin:20px;}
 
 /* boton filtrado*/
 .menu-filtrado {display:none;overflow:hidden;}
