@@ -34,15 +34,20 @@ def load_scapy(requser):
 
 
 def load_pcap(url, requser, filename):
-    # scan = UserScan.objects.get_or_create(user=requser)
-    # Borramos las filas asociadas a la captura del user
-    PcapInfo.objects.filter(user=requser).delete()
-    # generamos y cargamos csv al modelo
-    load_pcap_to_model(url, requser, filename)
-    # Visualizamos los datos
-    all_objects = PacketInfo.objects.filter(pcap__user=requser)
-    context = {'uploaded_file_url': filename, 'all_packets': all_objects}
-    return context
+	print(settings.BLACKLIST,filename)
+	if filename in settings.BLACKLIST:
+		return
+	try:
+		# Borramos las filas asociadas a la captura del user
+		PcapInfo.objects.filter(user=requser).delete()
+		# generamos y cargamos csv al modelo
+		load_pcap_to_model(url, requser, filename)
+		# Visualizamos los datos
+		all_objects = PacketInfo.objects.filter(pcap__user=requser)
+		context = {'uploaded_file_url': filename, 'all_packets': all_objects}
+		return context
+	except:
+		return {}
 
 
 @login_required(login_url='/login')
@@ -184,18 +189,16 @@ def upload(request):
             os.mkdir(os.path.join(settings.MEDIA_ROOT, str(request.user)))
         pcap_file = request.FILES['pcap']
         pcap_file_split = str(pcap_file).split('.')
-        print(pcap_file_split)
-        if (pcap_file_split[1] == 'pcap') or (pcap_file_split[1] == 'pcapng'):
+        if (pcap_file_split[1] == 'pcap') or (pcap_file_split[1] == 'pcapng') or (pcap_file_split[1] == 'cap'):
             requser = request.user
             user_path = media_path + '/' + str(requser)
-            # print('User path '+ user_path)
+            pcap_file.name = pcap_file.name.translate ({ord(c): "_" for c in " !@#$%^&*()[]{};:,/<>?\|`~-=-+"})
             fs = FileSystemStorage(location=user_path, base_url=settings.MEDIA_URL + str(requser))
             filename = fs.save(pcap_file.name, pcap_file)
             uploaded_file_url = fs.url(filename)
             # print("Proba " + uploaded_file_url)
-            context = load_pcap(uploaded_file_url, requser, filename)
-            return render(request, 'upload.html', context.update(
-                {'login_form': login_form, 'signup_form ': signup_form, 'login_error': login_error}))
+            load_pcap(uploaded_file_url, requser, filename)
+            return redirect('index')
         else:
             return render(request, 'nopcap.html')
 

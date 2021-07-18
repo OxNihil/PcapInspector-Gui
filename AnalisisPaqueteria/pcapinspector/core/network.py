@@ -73,9 +73,16 @@ class analyze_scapy():
             msg = packet[http.HTTPRequest].fields
             if "User_Agent" in msg.keys():
                 user_agent = str(msg['User_Agent'].decode("utf-8", errors="ignore"))
-                print(user_agent)
                 if user_agent not in self.data.user_agents:
                     self.data.user_agents.append(user_agent)
+            if "Server" in msg.keys():
+                server = str(msg['Server'].decode("utf-8", errors="ignore"))
+                if server not in self.data.servers:
+                    self.data.servers.append(server)
+            if "Cookie" in msg.keys():
+            	cookie = str(msg['Cookie'].decode("utf-8",errors="ignore"))
+            	if cookie not in self.data.cookie:
+            		self.data.cookie.append(cookie)
         elif packet.haslayer(http.HTTPResponse):
             msg = packet[http.HTTPResponse].fields
             if "User_Agent" in msg.keys():
@@ -87,6 +94,10 @@ class analyze_scapy():
                 server = str(msg['Server'].decode("utf-8", errors="ignore"))
                 if server not in self.data.servers:
                     self.data.servers.append(server)
+            if "Cookie" in msg.keys():
+            	cookie = str(msg['Cookie'].decode("utf-8",errors="ignore"))
+            	if cookie not in self.data.cookie:
+            		self.data.cookie.append(cookie)
         elif packet.haslayer(Raw):
             if "HTTP" in str(packet[Raw].load):
                 http_data = packet[Raw].load.decode("utf-8", errors="ignore").split("\r\n")
@@ -95,6 +106,8 @@ class analyze_scapy():
                         self.data.user_agents.append(i)
                     if "Server" in i and i not in self.data.servers:
                         self.data.servers.append(i)
+                    if "Cookie" in i and i not in self.data.cookie:
+                    	self.data.cookie.append(i)
 
     def check_for_dns(self, packet):
         try:

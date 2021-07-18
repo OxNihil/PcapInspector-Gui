@@ -93,7 +93,7 @@ class analyze_dataframe():
         return G
 
     def show_graph(self):
-        plt.figure(figsize=(12, 7))
+        plt.figure(figsize=(20, 9))
         G = self.create_graph()
         pos = nx.spring_layout(G)
         color_map = get_graph_color_map(self.df, G)

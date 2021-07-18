@@ -41,19 +41,19 @@
 	</script>
   	<nav class="sidebar-navigation" id="sidebar">
 		<ul>
-			<li class="active nav-item"><span data-url="{% url 'index' %}">Home</span></li>
-			<li><span data-url="{% url 'report' %}">Report</span></li>
-			<li><span data-url="{% url 'pcaps' %}">PcapList</span></li>
-			<li><span data-url="{% url 'upload' %}">Upload</span></li>
-			<li><span data-url="{% url 'map' %}">Map</span></li>
-			<li><span data-url="{% url 'graph' %}">Graph</span></li>
-			<li><span data-url="{% url 'stats' %}">Stats</span></li>
-			<li><span data-url="{% url 'ipinfo' %}">IPInfo</span></li>
+			<li id="tab-index"><span data-url="{% url 'index' %}">Home</span></li>
+			<li id="tab-pcaps"><span data-url="{% url 'pcaps' %}">PcapList</span></li>
+			<li id="tab-upload"><span data-url="{% url 'upload' %}">Upload</span></li>
+			<li id="tab-map"><span data-url="{% url 'map' %}">Map</span></li>
+			<li id="tab-graph"><span data-url="{% url 'graph' %}">Graph</span></li>
+			<li id="tab-stats"><span data-url="{% url 'stats' %}">Stats</span></li>
+			<li id="tab-ip-info"><span data-url="{% url 'ipinfo' %}">IPInfo</span></li>
+			<li id="tab-report"><span data-url="{% url 'report' %}">Report</span></li>
             {% if user.is_authenticated %}
             <li><span data-url="{% url 'logout_view' %}?next={{ request.path }}">Logout</span></li>
             {% else %}
-            <li ><span data-url="{% url 'login' %}">Login</span></li>
-            <li><span data-url="{% url 'register' %}">Register</span></li>
+            <li id="tab-login" ><span data-url="{% url 'login' %}">Login</span></li>
+            <li id="tab-register"><span data-url="{% url 'register' %}">Register</span></li>
             {% endif %}
 		</ul>
 	</nav>

@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% load staticfiles %}
 {%block content%}
+<script>
+	$("#tab-report").addClass("active");
+</script>
 <div>
 	<h1 style="padding:10px;background-color:black;color:white;">Report</h1>
 
@@ -12,16 +15,34 @@
 			<tbody>
 				<tr scope="row">
 					<td>Gateway</td>
-					<td>{{ netdata.gateway }}</td>
-				</tr>
-				<tr scope="row">
-					<td>Vlans</td>
-					<td>{{ netdata.vlans }}</td>
+					<td>{% if netdata.gateway|length > 0 %} 
+						{{ netdata.gateway }}
+					    {% else %}
+						No data has been recovered
+					{% endif %}
+					</td>
 				</tr>
 				<tr scope="row">
 					<td>Root Bridge</td>
-					<td>{{ netdata.root_bridge }}</td>
+					<td>{% if netdata.root_bridge|length > 0 %} 
+						{{ netdata.root_bridge }}
+					    {% else %}
+						No data has been recovered
+					{% endif %}
+					</td>
 				</tr>
+			</tbody>
+		</table>
+		<table class="scapyTable table" style="width:20%;float:left;">
+			<thead>
+				<th colspan="2" scope="col">VLANS</th>
+			</thead>
+			<tbody>
+				{% for i in netdata.vlans %}
+				<tr scope="row">
+					<td>{{ i }}</td>
+				</tr>
+				{% endfor %}
 			</tbody>
 		</table>
 		<table class="scapyTable table"  style="width:20%;float:left;">
@@ -36,6 +57,20 @@
 				{%endfor %}
 			</tbody>
 		</table>
+		{% if netdata.cookie|length > 0 %}
+		<table class="scapyTable table"  style="width:20%;float:left;">
+			<thead>
+				<th scope="col">COOKIE</th>
+			</thead>
+			<tbody>
+				{% for i in netdata.cookie %}
+				<tr scope="row">
+					<td>{{ i }}</td>
+				</tr>
+				{%endfor %}
+			</tbody>
+		</table>
+		{% endif %}
 		<table class="scapyTable table"  style="width:20%;float:left;">
 			<thead>
 				<th colspan="2" scope="col">NETBIOS</th>
@@ -86,9 +121,10 @@
 				{%endfor %}
 			</tbody>
 		</table>
+		{% if netdata.alerts|length > 0 %}
 		<table class="scapyTable table" style="width:20%;float:left;">
 			<thead>
-				<th scope="col">ALERTS</th>
+				<th scope="col">INFO</th>
 			</thead>
 			<tbody>
 				{% for i in netdata.alerts %}
@@ -98,6 +134,7 @@
 				{%endfor %}
 			</tbody>
 		</table>
+		{%  endif %}
 	</div>
 </div>
 {% endblock %}

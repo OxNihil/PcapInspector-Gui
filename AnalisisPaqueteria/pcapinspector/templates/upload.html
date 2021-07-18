@@ -2,7 +2,9 @@
 
 {% load staticfiles %}
 
-{% block content %}{% if request.user.is_authenticated %}
+{% block content %}
+<script>$("#tab-upload").addClass("active");</script>
+{% if request.user.is_authenticated %}
 <div id="ProgressBar">
   <div id="Bar"></div>
 </div>

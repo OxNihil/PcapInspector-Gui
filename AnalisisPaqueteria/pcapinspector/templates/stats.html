@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<script>$("#tab-stats").addClass("active");</script>
  {% if chart0 %}
   <img src="data:image_h_protocols_payload/png;base64, {{ chart0|safe }}">
  {% endif %}
