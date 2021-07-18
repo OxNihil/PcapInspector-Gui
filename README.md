@@ -6,11 +6,13 @@ Análisis de paquetería:
 Integrantes Grupo:
 -------------------------------------------
 
-Iago Pallares Tato - iago.pallares@udc.es
-Daniel González Anwar - daniel.osama.gonzalez@uc.es
-Marcos Vázquez Campos - marcos.vazquez3@udc.es
+iago.pallares@udc.es - Iago Pallares Tato
 
-Despliegue automático den Docker:
+daniel.osama.gonzalez@uc.es - Daniel González Anwar
+
+marcos.vazquez3@udc.es - Marcos Vázquez Campos 
+
+Despliegue automático en Docker:
 -------------------------------------------
 
 IMPLEMENTADO. El contenedor se instala e inicia de forma totalmente automatizada con el comando:
