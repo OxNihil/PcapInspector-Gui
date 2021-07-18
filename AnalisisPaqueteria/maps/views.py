@@ -14,6 +14,9 @@ def load(requser):
     ip_return = []
     ip_info = PacketInfo.objects.filter(pcap__user=requser)
 
+    if not ip_info :
+        return None
+
     for ip in ip_info:
         ip_result.append(ip.ip_src)
         ip_result.append(ip.ip_dst)
@@ -65,7 +68,7 @@ def index(request):
     requser = request.user
     dataIp = load(requser)
 
-    if dataIp.empty:
+    if type(dataIp) == type(None):
         return render(request, 'nopcap.html')  # Hai que comprobar na vista que non se recive nada nos templates
 
     dataGeo = pd.DataFrame()
