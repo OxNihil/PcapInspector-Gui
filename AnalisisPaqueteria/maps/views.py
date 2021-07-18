@@ -22,6 +22,8 @@ def load(requser):
     ip_list = ip_list['network'].dropna().unique()
 
     for ip in ip_list:
+        if ip == '':
+            continue
         public = ip.split('.')
         num1 = int(public[0])
         num2 = int(public[1])
@@ -40,7 +42,7 @@ def load(requser):
             continue
         if num1 == 10:
             continue
-        if num1 == 172 and (int(num2) > 15 and int(num3) < 32):
+        if num1 == 172 and (int(num2) > 15 and int(num2) < 32):
             continue
         ip_return.append(ip)
 

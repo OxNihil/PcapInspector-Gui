@@ -19,83 +19,68 @@
                 var latbef = null;
                 var lonbef = null;
                 var text = null;
+                var lat_fin = Array();
+                var lon_fin = Array();
+                var ip_fin= Array();
 
                 ip = {{ network|safe }};
                 lat = ({{ lat|safe }});
                 lon = {{ lon|safe }};
 
-                for (var j = 0; j <= ip.length; j++) {
-                  if (j >= ip.length) {
-                    var myLatLng = {lat: latbef, lng: lonbef};
+                console.log("Proba1")
 
-                    var marker = new google.maps.Marker({
-                        position: myLatLng,
-                        map,
-                        title: text,
-                        icon: {
-                          labelOrigin: new google.maps.Point(16,64),
-                          url: "https://drive.google.com/uc?id=0B3RD6FDNxXbdVXRhZHFnV2xaS1E"
-                        },
-                        label: {
-                          text: text,
-                          color: "black",
-                          fontWeight: "bold",
-                          fontSize: "15px"
-                        }
-                    });
-                  } else {
-
-                    var latUse = lat[j];
-                    var lngUse = lon[j];
-
-                    latUse = parseFloat(latUse);
-                    lngUse = parseFloat(lngUse);
+                lat_fin.push(parseFloat(lat[0]))
+                lon_fin.push(parseFloat(lon[0]))
+                ip_fin.push(ip[0])
 
 
-                    if (text == null){
-                      text = ip[j];
-                      latbef = latUse;
-                      lonbef = lngUse;
-                      continue
-
-                    } else {
-                      
-                      if ((latUse == latbef) & (lngUse == lonbef)) {
-                        text = text + " | " + ip[j]
-                        continue
-                      } else {
-
-                        var myLatLng = {lat: latbef, lng: lonbef};
-
-
-                        var marker = new google.maps.Marker({
-                            position: myLatLng,
-                            map,
-                            title: text,
-                            icon: {
-                              labelOrigin: new google.maps.Point(16,64),
-                              url: "https://drive.google.com/uc?id=0B3RD6FDNxXbdVXRhZHFnV2xaS1E"
-                            },
-                            label: {
-                              text: text,
-                              color: "black",
-                              fontWeight: "bold",
-                              fontSize: "15px"
-                            }
-                        });
-
-
-                        text = ip[j];
-                        latbef = latUse;
-                        lonbef = lngUse;
-                        continue
-                      }
+                for (var j = 1; j < ip.length; j++) {
+                  var aux = -1;
+                  for (var i = 0; i < ip_fin.length; i++) {
+                    if ((parseFloat(lat[j]) == lat_fin[i]) & (parseFloat(lon[j]) == lon_fin[i])) {
+                      aux = i;
+                      break;
                     }
+                  }
 
-                    // To add the marker to the map, call setMap();
+                  console.log(aux);
 
+                  if (aux == -1) {
+                    ip_fin.push(ip[j])
+                    lat_fin.push(parseFloat(lat[j]))
+                    lon_fin.push(parseFloat(lon[j]))
+                  } else {
+                    ip_fin[aux] = ip_fin[aux] + " | " + ip[j]
                   }
                 }
+
+                console.log(ip.length)
+
+                console.log(ip_fin);
+                console.log(lat_fin);
+                console.log(lon_fin)
+
+                for (var j = 0; j < ip_fin.length; j++) {
+                  var myLatLng = {lat: lat_fin[j], lng: lon_fin[j]};
+                  var text = ip_fin[j]
+
+                  var marker = new google.maps.Marker({
+                    position: myLatLng,
+                    map,
+                    title: text,
+                    icon: {
+                      labelOrigin: new google.maps.Point(16,64),
+                      url: "https://drive.google.com/uc?id=0B3RD6FDNxXbdVXRhZHFnV2xaS1E"
+                    },
+                    label: {
+                      text: text,
+                      color: "black",
+                      fontWeight: "bold",
+                      fontSize: "15px"
+                    }
+                  });
+                }
+
                 marker.setMap(map);
             }
         </script>
