@@ -44,12 +44,12 @@
 
   <div class="row">
     <div class="column">
-        <h2>Pcap List Examples</h2>
+        <h2 style="margin:10px;padding:10px;text-align:center;background-color: #313443;color:white;">Pcap List Examples</h2>
         {% if list_pcaps_example %}
           <ul style="list-style-type: none; display: inline-block;">
 
             {% for pcap_example in list_pcaps_example %}
-            <li>
+            <li style="display: block;padding: 10px 15px;margin-bottom: -1px;background-color: #fff;border: 1px solid #ddd;">
               <a href="{% url 'select' pcap_example %}">{{pcap_example}}</a>
             </li>
             {% endfor %}
@@ -63,12 +63,12 @@
 
     </div>
     <div class="column">
-        <h2>Your Pcap List</h2>
+        <h2 style="margin:20px;padding:10px;text-align:center;background-color: #313443;color:white;">Your Pcap List</h2>
         {% if list_pcaps_user %}
           <ul style="list-style-type: none; display: inline-block;">
 
             {% for pcap_user in list_pcaps_user %}
-            <li>
+              <li style="display: block;padding: 10px 15px;margin-bottom: -1px;background-color: #fff;border: 1px solid #ddd;">
               <a href="{% url 'select' pcap_user %}">{{pcap_user}}</a>
             </li>
             {% endfor %}

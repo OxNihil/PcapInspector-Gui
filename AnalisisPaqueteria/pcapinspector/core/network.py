@@ -14,6 +14,7 @@ class data_analyze():
         self.dnsqd = []
         self.dnsan = {}
         self.alerts = []
+        self.cookie = []
 
 
 class analyze_scapy():

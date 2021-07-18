@@ -188,6 +188,10 @@ def upload(request):
         if dir_exist == False:
             os.mkdir(os.path.join(settings.MEDIA_ROOT, str(request.user)))
         pcap_file = request.FILES['pcap']
+        if pcap_file.size > settings.MAX_UPLOAD_SIZE:
+        	context = {"maxsize":settings.MAX_UPLOAD_SIZE}
+        	return render(request, 'bigfile.html',context)
+        print(pcap_file.size)
         pcap_file_split = str(pcap_file).split('.')
         if (pcap_file_split[1] == 'pcap') or (pcap_file_split[1] == 'pcapng') or (pcap_file_split[1] == 'cap'):
             requser = request.user
