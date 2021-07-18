@@ -176,7 +176,8 @@ def upload(request):
 
     login_form = LoginForm()
     signup_form = SignupForm()
-
+    if request.method == 'POST' and "pcap" not in request.FILES:
+    	return render(request, 'nopcap.html')
     if request.method == 'POST' and (request.FILES['pcap'] and request.user.is_authenticated):
         media_path = settings.MEDIA_ROOT
         dir_exist = False
