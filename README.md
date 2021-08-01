@@ -1,21 +1,12 @@
-Análisis de paquetería:
+PcapInspector-Gui:
+Improved version of pcapinspector-cli including a GUI through django and automated deployment using docker
+
 -------------------------------------------
 ÚLTIMA ACTUALIZACIÓN: 18/07/2021
 -------------------------------------------
 
-Integrantes Grupo:
--------------------------------------------
-
-iago.pallares@udc.es - Iago Pallares Tato
-
-daniel.osama.gonzalez@uc.es - Daniel González Anwar
-
-marcos.vazquez3@udc.es - Marcos Vázquez Campos 
-
 Despliegue automático en Docker:
 -------------------------------------------
-
-IMPLEMENTADO. El contenedor se instala e inicia de forma totalmente automatizada con el comando:
 
 ./setup.sh
 
@@ -66,7 +57,7 @@ Funcionalidades:
 Gestión de usuarios:
 -------------------------------------------
 
-IMPLEMENTADO. Es necesario hacer login para acceder a cualquiera de las funcionalidades de la aplicación, para eso será necesario registrarse primero.
+Es necesario hacer login para acceder a cualquiera de las funcionalidades de la aplicación, para eso será necesario registrarse primero.
 
 Integración de APIs:
 -------------------------------------------
@@ -114,27 +105,7 @@ También se utiliza Pandas para manejar los datos a la hora de generar las gráf
 
 Su uso también tiene presencia para extraer información concreta que nos interesa a la hora de procesar las vistas e integrar datos con APIs.
 
-Tests:
--------------------------------------------
-IMPLEMENTADO. En la aplicación catálogo se han realizado una serie de tests que prueban el modeloy  las diferentes APIs.
-
-Gestión de errores y concurrencia:
--------------------------------------------
-
-Se ha tenido en cuenta que la aplicación debe ser concurrente y para ello cada usuario tendra un directorio propio para evitar colisiones.
-
-Para la gestión de errores, se han identificado diferentes problemas y se han subsanado, entre ellos:
-
-Cuando se intenta subir un archivo cuyo nombre tienen caracteres especiales, se sustituyen por barras bajas y luego se sube.
-Cuando se intenta subir un archivo cuyo nombre ya existe en los ficheros del usuario personal, se añaden caractereres al final para que no existan colisiones.
-Cuando se intenta subir un archivo que no tiene extensión pcap, cap, o pcapng no se sube.
-Cuando se intenta subir un archivo que que tiene extensión pcap, cap o pcapng pero no debería tenerla, no representa ningún tipo de información y la aplicación sigue funcionando perfectamente.
-Cuando las APIs integradas devuelven un tipo de respuesta inesperado (por ejemplo, por haber hecho más consultas del límite permitido en la versión gratuita) se gestiona.
-Cuando se sube un pcap que no posee de IPs públicas (aunque tenga privadas), eso se controla en las vistas. 
-Se han gestionado todos los problemas derivados de logins y registros.
-
 Consideraciones adicionales:
 -------------------------------------------
 
-A pesar de que la aplicación está diseñada de forma que es capaz de procesar y tratar ficheros pcap muy grandes, por motivos de optimización y de tiempo de respuesta, no es una práctica recomendable.
-La extracción de los datos de las APIs elegidas y el procesado de los datos cargados en el modelo toman tiempo, por eso hemos decidido limitar el tamaño de los pcaps que se pueden subir a 2.5MB.
+A pesar de que la aplicación está diseñada de forma que es capaz de procesar y tratar ficheros pcap muy grandes, por motivos de optimización y de tiempo de respuesta.La extracción de los datos de las APIs elegidas y el procesado de los datos cargados en el modelo toman tiempo, por eso hemos decidido limitar el tamaño de los pcaps que se pueden subir a 2.5MB.Modificable desde settings.py
