@@ -1,5 +1,5 @@
 PcapInspector-Gui:
-Improved version of pcapinspector-cli including a GUI through django and automated deployment using docker
+Pcap analyzer GUI through django and automated deployment using docker
 
 -------------------------------------------
 SCREENSHOTS
@@ -9,6 +9,10 @@ SCREENSHOTS
 ![Alt text](/screenshots/pcap3.png?raw=true "Table")
 
 
+
+Prerequisitos de despliegue:
+-------------------------------------------
+Actualizar con vuestra APIKEY (AnalisisPaqueteria/PcapInspector/Views)
 
 Despliegue automático en Docker:
 -------------------------------------------
