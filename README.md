@@ -12,7 +12,7 @@ SCREENSHOTS
 
 Prerequisitos de despliegue:
 -------------------------------------------
-Actualizar con vuestra APIKEY (AnalisisPaqueteria/PcapInspector/Views)
+Actualizar con vuestra APIKEY de AbuseDB  (AnalisisPaqueteria/PcapInspector/Views)
 
 Despliegue automático en Docker:
 -------------------------------------------
