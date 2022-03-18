@@ -245,7 +245,7 @@ def ipinfo(request):
     requser = request.user
     pcap_data = PacketInfo.objects.filter(pcap__user=requser)
     df = read_frame(pcap_data)
-    ABUSEIPDB_KEY = '0db808622fb894e2b928cfd91ff8399b8136831e68e3bff870bbf29ec01bc6d30b277d9722c0c992'
+    ABUSEIPDB_KEY = 'YOURAPIKEY'
     # Defining the api-endpoint
     url = 'https://api.abuseipdb.com/api/v2/check'
     ip_list = analyze_dataframe(df).get_endpoints_ip()
